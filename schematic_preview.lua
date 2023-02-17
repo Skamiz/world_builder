@@ -89,7 +89,7 @@ end
 -- we need a player here so the schematic can be in a loaded area when hidden
 schem_prev.new = function(schematic, attach_player)
 	local pos = attach_player:get_pos()
-	local schem = trim_schematic(schematic)
+	local schem = trim_schematic(table.copy(schematic))
 	local root = minetest.add_entity(pos, modprefix .."empty")
 
 	local va = VoxelArea:new({MinEdge = vector_1, MaxEdge = schem.size})

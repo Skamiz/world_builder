@@ -2,6 +2,7 @@
 Goal:
 	TODO: param2 override
 	TODO: on use imediatelly remove pointed node?
+		this works, though it does result in flickering when the node isn't present for a little bit
 	TODO: placement mode which works by distance like area selector
 	automatic procentage display
 	TODO:aux1 + punch to toggle replace mode? - nope punching can be only punching
@@ -99,8 +100,9 @@ minetest.register_node(mod_prefix .."random_node", {
 			local node = list[math.random(#list)]
 			local def = minetest.registered_nodes[node]
 			if meta:get("replace") == "true" then
-				minetest.set_node(pointed_thing.under, {name = node})
-				-- minetest.remove_node(pointed_thing.under)
+				-- minetest.set_node(pointed_thing.under, {name = node})
+				minetest.remove_node(pointed_thing.under)
+				def.on_place(ItemStack(node), placer, pointed_thing)
 			else
 				def.on_place(ItemStack(node), placer, pointed_thing)
 			end

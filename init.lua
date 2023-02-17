@@ -48,6 +48,9 @@ dofile(modpath .. "/clipboard.lua")
 -- 		teleport to pointed node/ just a fixed distance forward
 -- TODO: flood fill tool
 
+-- TODO: read keybind settings to provide acurate tooltips in singleplayer
+-- 		in multiplayer fall back on 'aux1', 'sneak', etc...
+
 
 local function print_table(t)
 	for k, v in pairs(t) do

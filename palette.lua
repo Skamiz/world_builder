@@ -6,6 +6,8 @@ local modname = minetest.get_current_modname()
 -- pallete object which can display itself as a formspec element, on click opens menu which allows editing the pallete
 -- pallete editable from pallete ?and player inv
 
+-- TODO: make filter look into the item description
+
 palette = {}
 local players = {}
 
