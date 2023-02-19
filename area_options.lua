@@ -12,7 +12,7 @@ TODO: line from pos1 to pos2
 
 ]]
 
-
+-- get first node from the players inventory
 local function get_first_node(player)
 	local inv = player:get_inventory()
 	local list = inv:get_list("main")
@@ -59,6 +59,8 @@ local function show_fs(player)
 
 		"button[0,5;1.5,0.75;draw_line;Line]",
 		"tooltip[draw_line;Draws a line from pos_1 to pos_2.]",
+		"button[0,6;1.5,0.75;build_wall;Wall]",
+		"tooltip[draw_line;Builds a wall between pos_1 to pos_2.]",
 	}
 
 	fs = table.concat(fs)
@@ -176,6 +178,23 @@ local function draw_line(player, node)
 		minetest.set_node(pos:round(), node)
 	end
 end
+local function build_wall(pos1, pos2, node, axis)
+	axis = axis or "y"
+	local direction = pos2 - pos1
+	local length = math.max(math.abs(direction.x), math.abs(direction.y), math.abs(direction.z))
+	direction = direction / length
+
+	for n = 0, length do
+		local pos = pos1 + (direction * n)
+		for n = math.min(pos1[axis], pos2[axis]), math.max(pos1[axis], pos2[axis]) do
+			local w_pos = vector.new(pos)
+			w_pos[axis] = n
+			minetest.set_node(w_pos:round(), node)
+		end
+	end
+end
+
+
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= modprefix .."area_options" then return end
@@ -222,6 +241,20 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local node_name = get_first_node(player)
 		if node_name then
 			draw_line(player, {name = node_name})
+		else
+			minetest.chat_send_player(player:get_player_name(), "You need at least one node in your inventory.")
+		end
+		return true
+	end
+	if fields.build_wall then
+		local p1, p2 = world_builder.get_area(player)
+		if not (p1 and p2) then
+			minetest.chat_send_player(player:get_player_name(), "You first need to select an area.")
+			return
+		end
+		local node_name = get_first_node(player)
+		if node_name then
+			build_wall(p1, p2, {name = node_name})
 		else
 			minetest.chat_send_player(player:get_player_name(), "You need at least one node in your inventory.")
 		end
