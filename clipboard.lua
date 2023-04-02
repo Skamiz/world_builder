@@ -230,10 +230,10 @@ minetest.register_craftitem(modprefix .."clipboard", {
 	description = "Area Clipboard"
 			.. "\n" .. minetest.colorize("#e3893b", "LMB") .. ": Clipboard options."
 			.. "\n" .. minetest.colorize("#3dafd2", "RMB") .. ": Place clipboard schem."
-			.. "\n" .. minetest.colorize("#ff7070", "Shift") .. " + " .. minetest.colorize("#e3893b", "LMB") .. ": Rotate right."
-			.. "\n" .. minetest.colorize("#ff7070", "Shift") .. " + " .. minetest.colorize("#3dafd2", "RMB") .. ": Rotate left."
-			.. "\n" .. minetest.colorize("#67a943", "Ctrl") .. " + " .. minetest.colorize("#e3893b", "LMB") .. ": Copy area to clipboard."
-			.. "\n" .. minetest.colorize("#67a943", "Ctrl") .. " + " .. minetest.colorize("#3dafd2", "RMB") .. ": Fixate preview."
+			.. "\n" .. minetest.colorize("#ff7070", "Sneak") .. " + " .. minetest.colorize("#e3893b", "LMB") .. ": Rotate right."
+			.. "\n" .. minetest.colorize("#ff7070", "Sneak") .. " + " .. minetest.colorize("#3dafd2", "RMB") .. ": Rotate left."
+			.. "\n" .. minetest.colorize("#67a943", "Aux1") .. " + " .. minetest.colorize("#e3893b", "LMB") .. ": Copy area to clipboard."
+			.. "\n" .. minetest.colorize("#67a943", "Aux1") .. " + " .. minetest.colorize("#3dafd2", "RMB") .. ": Fixate preview."
 	,
 	short_description = "Area Clipboard",
 	inventory_image = "wb_clipboard.png",

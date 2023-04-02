@@ -25,6 +25,12 @@ dofile(modpath .. "/random_node.lua")
 dofile(modpath .. "/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
+
+-- TODO: Make the tools unstackable
+-- TODO: when loading a schematic, check that all the required nodes are registered
+-- 		if not display warning instead / formspec listing all missing nodes
+-- 		eventually maybe also a formspec letting the player select replacementss
+-- TODO: a mechanism equivalent to fill bucket in painting
 -- TODO: move color blocks to this mod
 -- TODO: the terrainbrush needs an option to inverse mask
 --  paintbrush for color not terrain

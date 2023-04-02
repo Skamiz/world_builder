@@ -16,7 +16,7 @@ minetest.register_on_joinplayer(function(player, last_login)
 		index = player:get_wield_index(),
 		item = player:get_wielded_item():get_name(),
 	}
-	call_callbacks(player, players[player].item, nil)
+	minetest.after(0.001, call_callbacks, player, players[player].item, nil)
 end)
 
 minetest.register_on_leaveplayer(function(player, timed_out)

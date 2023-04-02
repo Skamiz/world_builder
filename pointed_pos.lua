@@ -114,10 +114,10 @@ minetest.register_craftitem(modprefix .."pointer", {
 
 
 world_builder.register_on_change_wielded(function(player, new_item, old_item)
-	if old_item == modprefix .."pointer" then
+	if old_item == modprefix .. "pointer" then
 		remove_pointer(player)
 	end
-	if new_item == modprefix .."pointer" then
+	if new_item == modprefix .. "pointer" then
 		show_pointer(player)
 	end
 end)
