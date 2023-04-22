@@ -32,6 +32,7 @@ function color_picker.get_color_picker_fs(width)
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
+	if formname ~= modname ..":testing" then return end
 	for k, v in pairs(colors) do
 		if fields["color_" .. v[1]] then
 			local wielded = player:get_wielded_item()

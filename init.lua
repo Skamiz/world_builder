@@ -18,6 +18,7 @@ dofile(modpath .. "/palette.lua")
 dofile(modpath .. "/color_picker.lua")
 
 -- tools
+dofile(modpath .. "/teleporter.lua")
 dofile(modpath .. "/selector.lua")
 dofile(modpath .. "/area_options.lua")
 dofile(modpath .. "/random_node.lua")
@@ -43,15 +44,14 @@ dofile(modpath .. "/clipboard.lua")
 -- TODO: maybe colorful names for the tool items?
 
 -- TODO: some player options like reach distance
+
 -- INSPIRATION: https://www.curseforge.com/minecraft/mc-mods/effortless-building/
 
 -- TODO: make all formspecs be built in table format
 -- TODO: make all apropriate places use hotbar select callbacks
 
 -- TODO: generalized undo functionality
--- TODO: tool for fast relocation
--- 		list of settable waypints
--- 		teleport to pointed node/ just a fixed distance forward
+
 -- TODO: flood fill tool
 
 -- TODO: read keybind settings to provide acurate tooltips in singleplayer

@@ -6,7 +6,6 @@ local players = {}
 
 -- TODO: gridsnapp
 -- TODO: individual clipboards
--- TODO: move schematic preview to it's own file
 -- TODO: multiplier for placement distance based on schem size should be a player option not a tool option
 -- TODO: button to clear schematic from clipboard
 -- TODO: when in fixed_pos mode add buttons to the formspec for moving pos along axes for finetunig of large schems

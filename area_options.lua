@@ -8,8 +8,6 @@ TODO: it might be worth it to eventually split mirroring into into it's own thin
 	mirror can be place din world to act while the player is building
 	on unloading it deactivates and has to be activated to be effective again
 
-TODO: line from pos1 to pos2
-
 ]]
 
 -- get first node from the players inventory
