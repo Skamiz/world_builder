@@ -150,6 +150,7 @@ minetest.register_craftitem(modprefix .."tool_teleporter", {
 	,
 	short_description = "Teleporter",
 	inventory_image = "wb_tool_teleporter.png",
+	stack_max = 1,
 	on_use = function(itemstack, user, pointed_thing)
 		local meta = itemstack:get_meta()
 		local distance = meta:get("distance")

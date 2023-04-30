@@ -8,9 +8,11 @@ local players = {}
 -- TODO: individual clipboards
 -- TODO: multiplier for placement distance based on schem size should be a player option not a tool option
 -- TODO: button to clear schematic from clipboard
+	--and a string in the formspec showing the selected schem name?
 -- TODO: when in fixed_pos mode add buttons to the formspec for moving pos along axes for finetunig of large schems
 -- TODO: UNDO might not work properly if the affected area isn't completely loaded
 -- TODO: a button for 'cut' instead of just coppy - automatically deselects area to avoid accidents
+-- TODO: make all cipboard functions acessible from the formspec so the kay combos aren't the only option to acess them
 
 local schem_path = minetest.get_worldpath() .. "/schematics"
 minetest.mkdir(schem_path)
@@ -236,6 +238,7 @@ minetest.register_craftitem(modprefix .."clipboard", {
 	,
 	short_description = "Area Clipboard",
 	inventory_image = "wb_clipboard.png",
+	stack_max = 1,
 	on_use = function(itemstack, user, pointed_thing)
 		clipboard_lmb(user)
 	end,

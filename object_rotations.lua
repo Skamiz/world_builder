@@ -24,9 +24,9 @@ rotations.facedir = {
 	vector.new( 0, -r, -r),
 
 	vector.new( 0,  0,  r),
-	vector.new( 0, -r,  r),
+	vector.new( 0,  r,  r),	--switched these two to fix them, thanks MrRar
 	vector.new( 0,  d,  r),
-	vector.new( 0,  r,  r),
+	vector.new( 0, -r,  r),	--switched these two to fix them, thanks MrRar
 
 	vector.new( 0,  0,  d),
 	vector.new( 0,  r,  d),

@@ -70,6 +70,7 @@ end
 minetest.register_craftitem(modprefix .."area_options", {
 	description = "Area Option",
 	inventory_image = "wb_area_options.png",
+	stack_max = 1,
 	on_use = function(itemstack, user, pointed_thing)
 		show_fs(user)
 	end,

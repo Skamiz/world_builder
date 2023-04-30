@@ -110,6 +110,7 @@ minetest.register_craftitem(modprefix .."pointer", {
 	short_description = "pointer",
 	description = "pointer\ndev item",
 	inventory_image = "wb_pointer_item.png",
+	stack_max = 1,
 })
 
 

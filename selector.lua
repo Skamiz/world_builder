@@ -177,6 +177,7 @@ minetest.register_craftitem(modprefix .."selector", {
 	,
 	short_description = "Area Selector",
 	inventory_image = "wb_selector.png",
+	stack_max = 1,
 	on_use = function(itemstack, user, pointed_thing)
 		use_selector(user, "pos_1")
 	end,

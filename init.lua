@@ -5,7 +5,7 @@ local modprefix = modname .. ":"
 world_builder = {}
 
 -- misc
-dofile(modpath .. "/functions.lua")
+-- dofile(modpath .. "/functions.lua")
 dofile(modpath .. "/hotbar_select.lua")
 dofile(modpath .. "/pointed_pos.lua")
 dofile(modpath .. "/schematics.lua")
@@ -27,12 +27,10 @@ dofile(modpath .. "/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
 
--- TODO: Make the tools unstackable
 -- TODO: when loading a schematic, check that all the required nodes are registered
 -- 		if not display warning instead / formspec listing all missing nodes
--- 		eventually maybe also a formspec letting the player select replacementss
+-- 		eventually maybe also a formspec letting the player select replacements
 -- TODO: a mechanism equivalent to fill bucket in painting
--- TODO: move color blocks to this mod
 -- TODO: the terrainbrush needs an option to inverse mask
 --  paintbrush for color not terrain
 -- TODO: scripter, writing and library of scripts to run on each node in selection
