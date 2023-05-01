@@ -4,6 +4,7 @@ local modprefix = modname .. ":"
 
 local players = {}
 
+-- buttons copy/cut/paste
 -- TODO: gridsnapp
 -- TODO: individual clipboards
 -- TODO: multiplier for placement distance based on schem size should be a player option not a tool option
@@ -92,30 +93,24 @@ local function place_from_clipboard(player, pos)
 		return
 	end
 
-	do
-		local size = vector.copy(schem.size)
-		if options.rot == 90 or options.rot == 270 then
-			size.x, size.z = size.z, size.x
-		end
-
-		local minp = vector.copy(pos)
-		for flag, bool in pairs(options.flags) do
-			local axis = flag:sub(-1)
-			if bool then
-				minp[axis] = minp[axis] - math.floor((size[axis] - 1)/2)
-			end
-		end
-
-		local maxp = minp + (size - vector_1)
-		local undo_schem = world_builder.schematics.make_schematic(minp, maxp)
-		p_data.undo = {
-			schem = undo_schem,
-			pos = minp,
-		}
-		-- world_builder.set_area(player, minp, maxp)
+	local size = vector.copy(schem.size)
+	if options.rot == 90 or options.rot == 270 then
+		size.x, size.z = size.z, size.x
 	end
 
-	minetest.place_schematic(pos, schem, tostring(options.rot), nil, options.force_placement, options.flag_string)
+	local minp = vector.copy(pos)
+	for flag, bool in pairs(options.flags) do
+		local axis = flag:sub(-1)
+		if bool then
+			minp[axis] = minp[axis] - math.floor((size[axis] - 1)/2)
+		end
+	end
+	local maxp = minp + (size - vector_1)
+
+	world_builder.execute_with_undo(player, minp, maxp, function()
+		minetest.place_schematic(pos, schem, tostring(options.rot), nil, options.force_placement, options.flag_string)
+		return "Placed schematic"
+	end)
 end
 
 
@@ -282,12 +277,6 @@ minetest.register_on_joinplayer(function(player, last_login)
 			name = "un-named",
 			selected = nil,
 		},
-
-		-- undoing
-		undo = {
-			schem = nil,
-			pos = nil,
-		},
 	}
 end)
 
@@ -352,9 +341,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	end
 
-	if fields.undo and p_data.undo.pos then
-		minetest.place_schematic(p_data.undo.pos, p_data.undo.schem, nil, nil, true, nil)
-		p_data.undo = {} -- only one undo
+	if fields.undo then
+		-- TODO: maybe hook this up to the global undo system
 	end
 
 	-- schematic saving/loading

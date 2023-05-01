@@ -6,27 +6,30 @@ world_builder = {}
 
 -- misc
 -- dofile(modpath .. "/functions.lua")
-dofile(modpath .. "/hotbar_select.lua")
-dofile(modpath .. "/pointed_pos.lua")
-dofile(modpath .. "/schematics.lua")
-dofile(modpath .. "/schematic_preview.lua")
+dofile(modpath .. "/util/hotbar_select.lua")
+dofile(modpath .. "/util/pointed_pos.lua")
+dofile(modpath .. "/util/schematics.lua")
+dofile(modpath .. "/util/schematic_preview.lua")
 dofile(modpath .. "/color_nodes.lua")
--- dofile(modpath .. "/undo.lua")
+dofile(modpath .. "/util/undo.lua")
 
 -- formspec stuff
-dofile(modpath .. "/palette.lua")
-dofile(modpath .. "/color_picker.lua")
+dofile(modpath .. "/modular_formspecs/palette.lua")
+dofile(modpath .. "/modular_formspecs/color_picker.lua")
 
 -- tools
-dofile(modpath .. "/teleporter.lua")
-dofile(modpath .. "/selector.lua")
-dofile(modpath .. "/area_options.lua")
-dofile(modpath .. "/random_node.lua")
+dofile(modpath .. "/tools/teleporter.lua")
+dofile(modpath .. "/tools/selector.lua")
+dofile(modpath .. "/tools/area_options.lua")
+dofile(modpath .. "/tools/random_node.lua")
 -- dofile(modpath .. "/builders_tool.lua")
-dofile(modpath .. "/clipboard.lua")
+dofile(modpath .. "/tools/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
 
+-- TODO: mod settings
+-- 		number of undos per person
+--		wether debug tools should be registered
 -- TODO: when loading a schematic, check that all the required nodes are registered
 -- 		if not display warning instead / formspec listing all missing nodes
 -- 		eventually maybe also a formspec letting the player select replacements
@@ -47,8 +50,6 @@ dofile(modpath .. "/clipboard.lua")
 
 -- TODO: make all formspecs be built in table format
 -- TODO: make all apropriate places use hotbar select callbacks
-
--- TODO: generalized undo functionality
 
 -- TODO: flood fill tool
 

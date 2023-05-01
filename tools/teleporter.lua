@@ -10,6 +10,7 @@ A tool for fast relocation
 TODO:
 	formspec cleanup
 	a more elaobrate description of the waypoint system in the formspec?
+	set formspec focus to a button
 
 ]]
 
@@ -91,6 +92,7 @@ end
 local function get_teleporter_fs(player, wielded)
 	local fs = {
 		"field[0,0;3,0.75;waypoint_name;Waypoint Name:;]",
+		"set_focus[add_waypoint;false]",
 		"button[3,0;1,0.75;add_waypoint;Add]",
 		"tooltip[add_waypoint;Add new waypoint to the list]",
 	}

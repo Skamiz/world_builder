@@ -16,11 +16,10 @@ TODO: large schematics are loosing nodes when rotated,
 		which does nothing against some simply dissapearing
 	functions which convert to/from a schematic structure which only contains non-air nodes
 	Would it be viable to use image waypoints in place of objects as a form of display?
-	It should be possible to encapsulate the whole area in a large bounding box, whichs textures can be created dynamically to avoind scaling issues
 
 ]]
 
-local rotations = dofile(modpath .. "/object_rotations.lua")
+local rotations = dofile(modpath .. "/util/object_rotations.lua")
 
 local schem_prev = {}
 local schem_prev_meta = {}

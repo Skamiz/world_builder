@@ -1,3 +1,4 @@
+-- utility table for the rotation of attachd objects by the nodes param2 value
 -- who would have thunked, but rotation for attachd objects works differently to direct object rotation
 local rotations = {}
 local d = 180

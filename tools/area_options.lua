@@ -8,6 +8,8 @@ TODO: it might be worth it to eventually split mirroring into into it's own thin
 	mirror can be place din world to act while the player is building
 	on unloading it deactivates and has to be activated to be effective again
 
+	Move all of "You first need to select an area" code to the begining of formspec recieve
+
 ]]
 
 -- get first node from the players inventory
@@ -68,7 +70,8 @@ end
 
 
 minetest.register_craftitem(modprefix .."area_options", {
-	description = "Area Option",
+	short_description = "Area Option",
+	description = "Area Option (WIP)",
 	inventory_image = "wb_area_options.png",
 	stack_max = 1,
 	on_use = function(itemstack, user, pointed_thing)
@@ -92,7 +95,10 @@ local function mirror_area(player, axis, direction)
 	local offset = (maxp[axis] - minp[axis]) + 1
 	if direction == "-" then offset = -offset end
 	target_pos[axis] = target_pos[axis] + offset
-	minetest.place_schematic(target_pos, schem, "0", nil, true, nil)
+	world_builder.execute_with_undo(player, target_pos, target_pos + schem.size, function()
+		minetest.place_schematic(target_pos, schem, "0", nil, true, nil)
+		return "Mirror Area"
+	end)
 end
 
 local function fill_volume(player, node)
@@ -108,7 +114,10 @@ local function fill_volume(player, node)
 	for i in va:iterp(minp, maxp) do
 		table.insert(all_pos, va:position(i))
 	end
-	minetest.bulk_set_node(all_pos, node)
+	world_builder.execute_with_undo(player, minp, maxp, function()
+		minetest.bulk_set_node(all_pos, node)
+		return "Fill Volume"
+	end)
 end
 
 local axes = {"x", "y", "z"}
@@ -139,7 +148,11 @@ local function fill_surface(player, node)
 			table.insert(all_pos, pos)
 		end
 	end
-	minetest.bulk_set_node(all_pos, node)
+
+	world_builder.execute_with_undo(player, minp, maxp, function()
+		minetest.bulk_set_node(all_pos, node)
+		return "Fill Surface"
+	end)
 end
 local function fill_frame(player, node)
 	local p1, p2 = world_builder.get_area(player)
@@ -157,7 +170,11 @@ local function fill_frame(player, node)
 			table.insert(all_pos, pos)
 		end
 	end
-	minetest.bulk_set_node(all_pos, node)
+
+	world_builder.execute_with_undo(player, minp, maxp, function()
+		minetest.bulk_set_node(all_pos, node)
+		return "Fill Frame"
+	end)
 end
 
 local function draw_line(player, node)
@@ -172,25 +189,36 @@ local function draw_line(player, node)
 	local length = math.max(math.abs(direction.x), math.abs(direction.y), math.abs(direction.z))
 	direction = direction / length
 
-	for n = 0, length do
-		local pos = p1 + (direction * n)
-		minetest.set_node(pos:round(), node)
-	end
+	world_builder.execute_with_undo(player, p1, p2, function()
+		for n = 0, length do
+			local pos = p1 + (direction * n)
+			minetest.set_node(pos:round(), node)
+		end
+		return "Draw Line"
+	end)
 end
-local function build_wall(pos1, pos2, node, axis)
+local function build_wall(player, node, axis)
+	local pos1, pos2 = world_builder.get_area(player)
+	if not (pos1 and pos2) then
+		minetest.chat_send_player(player:get_player_name(), "You first need to select an area.")
+		return
+	end
 	axis = axis or "y"
 	local direction = pos2 - pos1
 	local length = math.max(math.abs(direction.x), math.abs(direction.y), math.abs(direction.z))
 	direction = direction / length
 
-	for n = 0, length do
-		local pos = pos1 + (direction * n)
-		for n = math.min(pos1[axis], pos2[axis]), math.max(pos1[axis], pos2[axis]) do
-			local w_pos = vector.new(pos)
-			w_pos[axis] = n
-			minetest.set_node(w_pos:round(), node)
+	world_builder.execute_with_undo(player, pos1, pos2, function()
+		for n = 0, length do
+			local pos = pos1 + (direction * n)
+			for n = math.min(pos1[axis], pos2[axis]), math.max(pos1[axis], pos2[axis]) do
+				local w_pos = vector.new(pos)
+				w_pos[axis] = n
+				minetest.set_node(w_pos:round(), node)
+			end
 		end
-	end
+		return "Build Wall"
+	end)
 end
 
 
@@ -246,14 +274,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 	if fields.build_wall then
-		local p1, p2 = world_builder.get_area(player)
-		if not (p1 and p2) then
-			minetest.chat_send_player(player:get_player_name(), "You first need to select an area.")
-			return
-		end
 		local node_name = get_first_node(player)
 		if node_name then
-			build_wall(p1, p2, {name = node_name})
+			build_wall(player, {name = node_name})
 		else
 			minetest.chat_send_player(player:get_player_name(), "You need at least one node in your inventory.")
 		end

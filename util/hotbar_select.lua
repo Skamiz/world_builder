@@ -1,3 +1,5 @@
+-- allows registering callbacks for when the players wielded item changes
+
 local players = {}
 local registered_on_change_wielded = {}
 

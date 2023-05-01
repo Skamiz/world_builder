@@ -13,7 +13,7 @@ world_builder.schematics = schematics
 
 schematics.make_schematic = function(pos1, pos2, air_prob)
 	-- by default don't include "air"
-	-- air_prob = air_prob or 0
+	air_prob = air_prob or 0 -- this was commented out and I don't know why
 	local minp, maxp = vector.sort(pos1, pos2)
 	local va = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
 
@@ -105,4 +105,56 @@ schematics.mirror = function(schematic, axis)
 		size = schematic.size,
 	}
 	return new_schematic
+end
+
+local function nodes_equal(a, b)
+	if a.name == b.name and a.param2 == b.param2 then
+		return true
+	end
+	return false
+end
+
+-- This is an atempt to minimize the memory footprint of the undo schematics by
+-- only having one table per node variation, instead of having one for each position
+local function get_node_ref(nodes, node)
+	local node_string = node.name .. node.param2
+	if not nodes[node_string] then
+		nodes[node_string] = table.copy(node)
+	end
+	return nodes[node_string]
+end
+
+local nil_node = {name = "air", prob = 0}
+schematics.diff = function(schemA, schemB)
+	if schemA.size ~= schemB.size then
+		return nil, "Schems must be the same size"
+	end
+
+	local va = VoxelArea:new({MinEdge = vector_1, MaxEdge = schemA.size})
+	local dataAB, dataBA = {}, {}
+	local nodes = {}
+
+	for i in va:iterp(vector_1, schemA.size) do
+		local nodeA = schemA.data[i]
+		local nodeB = schemB.data[i]
+
+		if nodes_equal(nodeA, nodeB) then
+			dataAB[i] = nil_node
+			dataBA[i] = nil_node
+		else
+			dataAB[i] = get_node_ref(nodes, nodeA)
+			dataBA[i] = get_node_ref(nodes, nodeB)
+		end
+	end
+
+	local schemAB = {
+		data = dataAB,
+		size = vector.new(schemA.size),
+	}
+	local schemBA = {
+		data = dataBA,
+		size = vector.new(schemA.size),
+	}
+
+	return schemAB, schemBA
 end

@@ -2,16 +2,11 @@ local modname = minetest.get_current_modname()
 local modprefix = modname .. ":"
 
 --[[
-Move stuff here which is for determining what the player is pointing at.
-above/bellow/distance
-
-
-probably best not to mess with max distance here
-	or maybe dynamicaly get the current max reach distance?
-
-
-Actually I notice that I already have this in the functions.lua file ... >.<
-still need to do the raycast even if it's to figure above/below pos since I need a way to move the indicator
+Utility for finding the position the player is currently pointing at.
+has 3 modes:
+"distance" returned position is exact distance from player, regardless of in between nodes
+"above" returned position is one node above the one the player points at
+"under" returned position is the the node the player points at
 
 ]]
 
@@ -89,7 +84,9 @@ local players = {}
 
 minetest.register_globalstep(function(dtime)
 	for player, pointer in pairs(players) do
-		local pos = world_builder.pointed_pos(player, 5, "under"):round()
+		local wielded = player:get_wielded_item()
+		local meta = wielded:get_meta()
+		local pos = world_builder.pointed_pos(player, tonumber(meta:get("distance")) or 5, meta:get("pointing_mode") or "under"):round()
 		pointer:set_pos(pos)
 	end
 end)
@@ -106,11 +103,37 @@ end
 
 minetest.register_on_leaveplayer(remove_pointer)
 
+local mode_index = {
+	["distance"] = 1,
+	["above"] = 2,
+	["under"] = 3,
+}
+local function show_poniter_formspec(player)
+	local wielded = player:get_wielded_item()
+	local meta = wielded:get_meta()
+	local fs = {
+		"formspec_version[6]",
+		"size[3,3,false]",
+		"field[0.5,0.75;2,0.75;distance;TP distance:;" .. meta:get_string("distance") .. "]",
+		"tooltip[distance;Overrides the pointed distance. (default: 5)]",
+		"dropdown[0.5,1.75;2,0.75;pointing_mode;distance,above,under;" .. (mode_index[meta:get("pointing_mode")] or "1") .. ";false]",
+		"tooltip[pointing_mode;Determines how the pointing ray interacts with colliding nodes.]",
+	}
+	fs = table.concat(fs)
+	minetest.show_formspec(player:get_player_name(), modprefix .."pointer", fs)
+end
+
 minetest.register_craftitem(modprefix .."pointer", {
 	short_description = "pointer",
 	description = "pointer\ndev item",
 	inventory_image = "wb_pointer_item.png",
 	stack_max = 1,
+	on_place = function(itemstack, placer, pointed_thing)
+		show_poniter_formspec(placer)
+	end,
+	on_secondary_use = function(itemstack, user, pointed_thing)
+		show_poniter_formspec(user)
+	end,
 })
 
 
@@ -121,4 +144,24 @@ world_builder.register_on_change_wielded(function(player, new_item, old_item)
 	if new_item == modprefix .. "pointer" then
 		show_pointer(player)
 	end
+end)
+
+
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	if formname ~= modprefix .."pointer" then return end
+
+	local wielded = player:get_wielded_item()
+	if wielded:get_name() ~= modprefix .."pointer" then return end
+	local meta = wielded:get_meta()
+
+	if tonumber(fields.distance) then
+		meta:set_string("distance", fields.distance)
+	end
+	if fields.pointing_mode then
+		meta:set_string("pointing_mode", fields.pointing_mode)
+	end
+
+	player:set_wielded_item(wielded)
+
+	return true
 end)
