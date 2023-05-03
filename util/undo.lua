@@ -1,6 +1,9 @@
 local modname = minetest.get_current_modname()
 local modprefix = modname .. ":"
 
+--[[
+WARNING: UNDO might not work properly if the affected area isn't completely loaded
+]]
 
 local undo_limit = 50
 
@@ -62,7 +65,7 @@ local function get_undo_list(player)
 	return fs
 end
 local function get_undo_fs(player)
-	fs = {
+	local fs = {
 		"formspec_version[6]",
 		"size[6,8,false]",
 		"container[0.5,0.5]",
@@ -81,7 +84,7 @@ end
 minetest.register_craftitem(modprefix .."undo", {
 	short_description = "Undo",
 	description = "Undo"
-			.. "\n" .. minetest.colorize("#e3893b", "LMB") .. ": Undo last Action."
+			.. "\n" .. minetest.colorize("#e3893b", "LMB") .. ": Undo last action."
 			.. "\n" .. minetest.colorize("#3dafd2", "RMB") .. ": View undo history."
 	,
 	inventory_image = "wb_undo.png",

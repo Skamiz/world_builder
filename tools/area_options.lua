@@ -5,10 +5,19 @@ local modprefix = modname .. ":"
 TODO: it might be worth it to eventually split mirroring into into it's own thing
 	with a sparate item which doesn't use formspecs, but the players look direction
 	and position instead
-	mirror can be place din world to act while the player is building
-	on unloading it deactivates and has to be activated to be effective again
+	mirror can be placed in world to act while the player is building
+	by punching the mirror a player can register/unregister themselves so their
+	node placemnt/digging is mirrored along the mirrors configured axes
+	consider: digging is only mirrored to nodes which are the same as the dug one
+
+	nodebox node mirroring
+	when the mirroring tables are generated add them to the nodes def
 
 	Move all of "You first need to select an area" code to the begining of formspec recieve
+
+	button to fix light in area
+
+	The individual placement functions shouldn't be player reliant and they should be globaly acessible
 
 ]]
 

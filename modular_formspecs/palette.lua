@@ -54,20 +54,21 @@ function palette.get_creative_form(player)
 	local context = players[name]
 	local meta = player:get_meta()
 
-	local fs = ""
-		.. "list[detached:palette_" .. name .. ";main;0,1;10,4;" .. math.max((context.current_page * 40) - 40, 0) .. "]"
-		.. "field[0,0;3,0.75;search_text;;" .. context.search_text .. "]"
-		.. "field_close_on_enter[search_text;false]"
-		.. "button[3,0;0.75,0.75;palette_search;S]"
-		.. "tooltip[palette_search;Search]"
-		.. "button[4,0;0.75,0.75;palette_clear;C]"
-		.. "tooltip[palette_clear;Clear Search]"
-		.. "button[8.75,0;0.75,0.75;palette_prev;P]"
-		.. "tooltip[palette_prev;Previous Page]"
-		.. "button[11.5,0;0.75,0.75;palette_next;N]"
-		.. "tooltip[palette_next;Next Page]"
-		.. "label[10.25,0.375;" .. context.current_page .. "/" .. math.ceil(#context.list/40) .. "]"
-
+	local fs = {
+		"list[detached:palette_" .. name .. ";main;0,1;10,4;" .. math.max((context.current_page * 40) - 40, 0) .. "]",
+		"field[0,0;3,0.75;search_text;;" .. context.search_text .. "]",
+		"field_close_on_enter[search_text;false]",
+		"button[3,0;0.75,0.75;palette_search;S]",
+		"tooltip[palette_search;Search]",
+		"button[4,0;0.75,0.75;palette_clear;C]",
+		"tooltip[palette_clear;Clear Search]",
+		"button[8.75,0;0.75,0.75;palette_prev;P]",
+		"tooltip[palette_prev;Previous Page]",
+		"button[11.5,0;0.75,0.75;palette_next;N]",
+		"tooltip[palette_next;Next Page]",
+		"label[10.25,0.375;" .. context.current_page .. "/" .. math.ceil(#context.list/40) .. "]",
+	}
+	fs = table.concat(fs)
 	return fs
 end
 
@@ -131,17 +132,3 @@ minetest.register_on_leaveplayer(function(player, timed_out)
 	players[name] = nil
 	minetest.remove_detached_inventory("palette_" .. name)
 end)
-
-local function show_test_fs(player)
-	local fs = ""
-	.. "formspec_version[6]"
-	.. "size[12.75,13,false]"
-	.. "list[current_player;main;0.25,8;10,4]"
-	.. "container[0.25,0.25]"
-	.. palette.get_creative_form(player)
-	.. "container_end[]"
-	.. "listring[]"
-
-	minetest.show_formspec(player:get_player_name(), modname ..":testing", fs)
-end
-palette.register_callbacks(modname ..":testing", show_test_fs)

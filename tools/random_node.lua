@@ -10,7 +10,7 @@ Goal:
 	checkbox for replacing instead of painting
 		make it possible to change this through a key + use kombo, so the forspec doesn't have to be opened
 
-	maybe it wouldbe viable to have replacement mode as a general player setting rather then item bound
+	maybe it would be viable to have replacement mode as a general player setting rather then item bound
 --]]
 local function print_table(t)
 	for k, v in pairs(t) do
@@ -50,29 +50,34 @@ local mod_prefix = modname .. ":"
 local function get_random_node_fs(player)
 	local itemstack = player:get_wielded_item()
 	local meta = itemstack:get_meta()
-	local fs = ""
-		.. "field[0,0;3,0.75;stack_name;;" .. itemstack:get_description() .. "]"
-		.. "field_close_on_enter[search_text;false]"
-		.. "button[3,0;0.75,0.75;save;R]"
-		.. "tooltip[save;Rename Item]"
-		.. "checkbox[4,0.375;replace_mode;Replace Mode;" .. meta:get_string("replace") .. "]"
-		.. "list[detached:random_node;main;0,1;10,1]"
-		return fs
+	local fs = {
+		"field[0,0;3,0.75;stack_name;;" .. itemstack:get_description() .. "]",
+		"field_close_on_enter[search_text;false]",
+		"button[3,0;0.75,0.75;save;R]",
+		"tooltip[save;Rename Item]",
+		"checkbox[4,0.375;replace_mode;Replace Mode;" .. meta:get_string("replace") .. "]",
+		"tooltip[replace_mode;Replace pointed node instead of building on top of it.]",
+		"list[detached:random_node;main;0,1;10,1]",
+	}
+	fs = table.concat(fs)
+	return fs
 end
 local function show_random_node_formspec(player)
-	local fs = ""
-		.. "formspec_version[6]"
-		.. "size[12.75,9.75,false]"
-		.. "container[0.25,0.25]"
-		.. palette.get_creative_form(player)
-		.. "container_end[]"
-		.. "container[0.25,6.5.25]"
-		.. color_picker.get_color_picker_fs(16)
-		.. "container_end[]"
-		.. "container[0.25,7.5.25]"
-		.. get_random_node_fs(player)
-		.. "container_end[]"
-		.. "listring[]"
+	local fs = {
+		"formspec_version[6]",
+		"size[12.75,9.75,false]",
+		"container[0.25,0.25]",
+		palette.get_creative_form(player),
+		"container_end[]",
+		"container[0.25,6.5.25]",
+		color_picker.get_color_picker_fs(16),
+		"container_end[]",
+		"container[0.25,7.5.25]",
+		get_random_node_fs(player),
+		"container_end[]",
+		"listring[]",
+	}
+	fs = table.concat(fs)
 	minetest.show_formspec(player:get_player_name(), mod_prefix .."random_node", fs)
 end
 

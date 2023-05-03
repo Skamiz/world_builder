@@ -1,6 +1,13 @@
 local modname = minetest.get_current_modname()
 local modprefix = modname .. ":"
 
+--[[
+TODO: make the yellow selection box segmented so it's easier to tell at a glance how many nodes it's big
+		see 'edit' mod
+		one way would be to use a checked texture and cut out only as many pixels as needed
+			but this will lead to missaligned tillin at the edges where planes meet
+			though it shouldn't be impossible to get it aligned with some trickery
+]]
 
 local players = {}
 local pointing_distance = 4.5
@@ -53,7 +60,9 @@ local function remove_hud(player)
 end
 local function update_hud(player)
 	-- minetest.chat_send_player(player:get_player_name(), "updating area selection hud")
-	player:hud_change(players[player].hud_id, "text", get_hud_string(player))
+	if players[player].hud_id then
+		player:hud_change(players[player].hud_id, "text", get_hud_string(player))
+	end
 end
 
 
@@ -113,8 +122,23 @@ local function update_selection(player, pos_1, pos_2)
 	p_data.selection:set_pos(minp + mid)
 end
 
+-- also could have used marker instead of indicator, oh well
+local function remove_indicator(player, indicator)
+	local ind = players[player][indicator]
+	ind.pos = nil
+	if ind.obj then ind.obj:remove() end
+	ind.obj = nil
+	update_selection(player)
+	update_hud(player)
+end
+
 -- creates and moves pos_1, pos_2, and selector objects
 local function set_indicator_position(player, indicator, pos)
+	if not pos then
+		remove_indicator(player, indicator)
+		return
+	end
+
 	local ind = players[player][indicator]
 	-- if it doesn't exist already, create it
 	if not ind.obj or ind.obj:get_pos() == nil then
@@ -132,15 +156,6 @@ local function set_indicator_position(player, indicator, pos)
 	update_hud(player)
 end
 
--- also could have used marker instead of indicator, oh well
-local function remove_indicator(player, indicator)
-	local ind = players[player][indicator]
-	ind.pos = nil
-	if ind.obj then ind.obj:remove() end
-	ind.obj = nil
-	update_selection(player)
-	update_hud(player)
-end
 
 
 -- API section

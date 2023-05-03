@@ -18,7 +18,7 @@ TODO: large schematics are loosing nodes when rotated,
 	Would it be viable to use image waypoints in place of objects as a form of display?
 
 ]]
-
+local max_node_objects = 1000 --TODO: setting for this
 local rotations = dofile(modpath .. "/util/object_rotations.lua")
 
 local schem_prev = {}
@@ -105,7 +105,7 @@ schem_prev.new = function(schematic, attach_player)
 		local node = schem.data[i]
 		local node_name = node.name
 		local node_def = minetest.registered_nodes[node_name]
-		if node_name ~= "air" and math.random() < (1000/nnodes) then
+		if node_name ~= "air" and math.random() < (max_node_objects/nnodes) then
 			local prev = minetest.add_entity(pos, modprefix .."preview")
 			prev:set_properties({
 				wield_item = node_name,

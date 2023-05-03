@@ -11,7 +11,6 @@ local players = {}
 -- TODO: button to clear schematic from clipboard
 	--and a string in the formspec showing the selected schem name?
 -- TODO: when in fixed_pos mode add buttons to the formspec for moving pos along axes for finetunig of large schems
--- TODO: UNDO might not work properly if the affected area isn't completely loaded
 -- TODO: a button for 'cut' instead of just coppy - automatically deselects area to avoid accidents
 -- TODO: make all cipboard functions acessible from the formspec so the kay combos aren't the only option to acess them
 
@@ -80,6 +79,25 @@ local function copy_area_to_clipboard(player)
 	p_data.ghost = ghost
 end
 
+local function cut_area_to_clipboard(player)
+	copy_area_to_clipboard(player)
+	local pos1, pos2 = world_builder.get_area(player)
+	local node = {name = "air"}
+
+	local minp, maxp = vector.sort(pos1, pos2)
+	local va = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
+	local all_pos = {}
+	for i in va:iterp(minp, maxp) do
+		table.insert(all_pos, va:position(i))
+	end
+	world_builder.execute_with_undo(player, minp, maxp, function()
+		minetest.bulk_set_node(all_pos, node)
+		return "Cut selection"
+	end)
+
+	world_builder.set_area(player, nil, nil)
+end
+
 local function place_from_clipboard(player, pos)
 	local p_data = players[player]
 	pos = p_data.fixed_pos or pos
@@ -132,32 +150,50 @@ end
 
 local function show_clipboard_fs(player)
 	local opt = players[player].options
-	local fs = ""
-	.. "formspec_version[6]"
-	.. "size[4.5,9.5,false]"
-	.. "container[0.25,0.25]"
-	.. "set_focus[place_air;true]"
-	.. "checkbox[0,0.25;place_air;place_air;" .. tostring(opt.place_air) .. "]"
-	.. "checkbox[0,0.75;force_placement;force_placement;" .. tostring(opt.force_placement) .. "]"
-	.. "checkbox[0,1.25;place_center_x;place_center_x;" .. tostring(opt.flags.place_center_x) .. "]"
-	.. "checkbox[0,1.75;place_center_y;place_center_y;" .. tostring(opt.flags.place_center_y) .. "]"
-	.. "checkbox[0,2.25;place_center_z;place_center_z;" .. tostring(opt.flags.place_center_z) .. "]"
-	.. "container[0,3]"
-	-- .. "set_focus[schem_name;true]"
-	.. "field[0,0;2,0.75;schem_name;file name;" .. players[player].formspec.name .. "]"
-	.. "button[2.25,0;1.5,0.75;save;Save]"
-	.. "tooltip[save;Save schematic to file]"
-	.. "button[0.25,5.25;1.5,0.75;load;Load]"
-	.. "tooltip[load;Load selected schematic from file]"
-	.. "button[2.25,5.25;1.5,0.75;delete;Delete]"
-	.. "tooltip[delete;Delete selected schematic file]"
-	.. get_schem_list(player)
-	.. "container_end[]"
-	.. "button[2.5,0;1.5,0.75;undo;Undo]"
-	.. "tooltip[undo;Undo last placement]"
-	.. "container_end[]"
+	local fs = {
+		"formspec_version[6]",
+		"size[6.5,12,false]",
+		"container[0.5,0.5]",
+		"container[0,0]",
+		"button[0,0;1.5,0.75;copy;Copy]",
+		"tooltip[copy;Copy selection to clipboard]",
+		"button[2,0;1.5,0.75;cut;Cut]",
+		"tooltip[cut;Copy selection to clipboard and clear selected area]",
+		"button[4,0;1.5,0.75;paste;Paste]",
+		"tooltip[paste;Place current schem into the world]",
+		"button[0,1;1.5,0.75;rotate90;Rotate 90°]",
+		"tooltip[rotate90;Rotate schematic preview 90° clockwise]",
+		"button[2,1;1.5,0.75;rotate270;Rotate -90°]",
+		"tooltip[rotate270;Rotate schematic preview 90° counter-clockwise]",
+		"button[4,1;1.5,0.75;fixate;Fixate]",
+		"tooltip[fixate;Fix/Unfix current preview position in space]",
+		"button[4,2;1.5,0.75;clear;Clear CB]",
+		"tooltip[clear;Clears current schematic from clipboard]",
+		"container_end[]",
+		"set_focus[place_air;true]",
+		"container[0,2.5]",
+		"label[0,0;Schematic placement options:]",
+		"checkbox[0,0.5;place_center_x;place_center_x;" .. tostring(opt.flags.place_center_x) .. "]",
+		"checkbox[0,1;place_center_y;place_center_y;" .. tostring(opt.flags.place_center_y) .. "]",
+		"checkbox[0,1.5;place_center_z;place_center_z;" .. tostring(opt.flags.place_center_z) .. "]",
+		"checkbox[3,0.5;force_placement;force_placement;" .. tostring(opt.force_placement) .. "]",
+		"checkbox[3,1;place_air;place_air;" .. tostring(opt.place_air) .. "]",
+		"container_end[]",
+		"container[0.75,5]",
+		-- "set_focus[schem_name;true]",
+		"field[0,0;2,0.75;schem_name;file name;" .. players[player].formspec.name .. "]",
+		"button[2.25,0;1.5,0.75;save;Save]",
+		"tooltip[save;Save schematic to file]",
+		"button[0.25,5.25;1.5,0.75;load;Load]",
+		"tooltip[load;Load selected schematic from file]",
+		"button[2.25,5.25;1.5,0.75;delete;Delete]",
+		"tooltip[delete;Delete selected schematic file]",
+		get_schem_list(player),
+		"container_end[]",
+		"container_end[]",
+	}
 
-
+	fs = table.concat(fs)
 	minetest.show_formspec(player:get_player_name(), modprefix .. "clipboard", fs)
 end
 
@@ -322,6 +358,41 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local p_data = players[player]
 	local opt = p_data.options
 
+	if fields.copy then
+		copy_area_to_clipboard(player)
+	end
+	if fields.cut then
+		cut_area_to_clipboard(player)
+	end
+	if fields.paste then
+		local pos = vector.round(world_builder.get_looked_pos(player, players[player].distance))
+		place_from_clipboard(player, pos)
+	end
+	if fields.rotate90 then
+		rotate_schematic(player, 90)
+	end
+	if fields.rotate270 then
+		rotate_schematic(player, -90)
+	end
+	if fields.fixate then
+		local pos = vector.round(world_builder.get_looked_pos(player, players[player].distance))
+		if p_data.ghost then
+			if p_data.fixed_pos then
+				p_data.fixed_pos = nil
+			elseif p_data.ghost.obj then
+				p_data.fixed_pos = pos
+			end
+		end
+	end
+	if fields.clear then
+		local p_data = players[player]
+		p_data.options.rot = 0
+		p_data.formspec.name = "un-named"
+		if p_data.ghost then p_data.ghost:delete() end
+		p_data.schem = {}
+	end
+
+
 	-- schematic flags
 	if fields.force_placement then
 		opt.force_placement = not opt.force_placement
@@ -339,10 +410,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			p_data.ghost:set_placement(nil, nil, opt.flags)
 			update_flag_string(player)
 		end
-	end
-
-	if fields.undo then
-		-- TODO: maybe hook this up to the global undo system
 	end
 
 	-- schematic saving/loading

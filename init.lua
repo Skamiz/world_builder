@@ -29,7 +29,8 @@ dofile(modpath .. "/tools/clipboard.lua")
 
 -- TODO: mod settings
 -- 		number of undos per person
---		wether debug tools should be registered
+--		whether debug tools should be registered
+-- 		"max" number of ghost nodes per schem-preview
 -- TODO: when loading a schematic, check that all the required nodes are registered
 -- 		if not display warning instead / formspec listing all missing nodes
 -- 		eventually maybe also a formspec letting the player select replacements
@@ -48,13 +49,16 @@ dofile(modpath .. "/tools/clipboard.lua")
 
 -- INSPIRATION: https://www.curseforge.com/minecraft/mc-mods/effortless-building/
 
--- TODO: make all formspecs be built in table format
 -- TODO: make all apropriate places use hotbar select callbacks
 
 -- TODO: flood fill tool
 
 -- TODO: read keybind settings to provide acurate tooltips in singleplayer
 -- 		in multiplayer fall back on 'aux1', 'sneak', etc...
+
+-- TODO: chatcomand for setting players hotbar length as a backup if they have no other option for it
+
+
 
 
 local function print_table(t)

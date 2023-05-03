@@ -23,16 +23,30 @@ local colors = {
 
 function color_picker.get_color_picker_fs(width)
 	width = width or 4
-	local fs = ""
+	local fs = {}
 	for i, color in ipairs(colors) do
-		fs = fs .. "image_button[" .. (i-1)%width/2 .. "," .. (math.ceil(i/width) - 1)/2 .. ";0.5,0.5;wb_color.png^[colorize:" .. color[3] .. ";color_" .. color[1] .. ";;false;false]"
-			.. "tooltip[color_" .. color[1] .. ";" .. color[2] .. "]"
+		fs[#fs + 1] = "image_button["
+		fs[#fs + 1] = (i-1)%width/2
+		fs[#fs + 1] = ","
+		fs[#fs + 1] = (math.ceil(i/width) - 1)/2
+		fs[#fs + 1] = ";0.5,0.5;wb_color.png^[colorize:"
+		fs[#fs + 1] = color[3]
+		fs[#fs + 1] = ";color_"
+		fs[#fs + 1] = color[1]
+		fs[#fs + 1] = ";;false;false]"
+
+		fs[#fs + 1] = "tooltip[color_"
+		fs[#fs + 1] = color[1]
+		fs[#fs + 1] = ";"
+		fs[#fs + 1] = color[2]
+		fs[#fs + 1] = "]"
 	end
+	fs = table.concat(fs)
 	return fs
 end
 
+-- This intentionally isn't locked to a spcific formspec name
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-	if formname ~= modname ..":testing" then return end
 	for k, v in pairs(colors) do
 		if fields["color_" .. v[1]] then
 			local wielded = player:get_wielded_item()
@@ -45,15 +59,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 end)
 
 local function show_test_fs(player)
-	local fs = ""
-	.. "formspec_version[6]"
-	.. "size[2.5,2.5,false]"
-	-- .. "list[current_player;main;0.25,8;10,4]"
-	.. "container[0.25,0.25]"
-	.. color_picker.get_color_picker_fs(4)
-	.. "container_end[]"
-	-- .. "listring[]"
-
+	local fs = {
+	"formspec_version[6]",
+	"size[2.5,2.5,false]",
+	"container[0.25,0.25]",
+	color_picker.get_color_picker_fs(4),
+	"container_end[]",
+	}
+	fs = table.concat(fs)
 	minetest.show_formspec(player:get_player_name(), modname ..":testing", fs)
 end
 

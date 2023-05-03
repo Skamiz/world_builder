@@ -148,7 +148,7 @@ minetest.register_craftitem(modprefix .."tool_teleporter", {
 	description = "Teleporter"
 			.. "\n" .. minetest.colorize("#e3893b", "LMB") .. ": Teleport forward."
 			.. "\n" .. minetest.colorize("#67a943", "Aux1") .. " + " .. minetest.colorize("#e3893b", "LMB") .. ": Teleport backward."
-			.. "\n" .. minetest.colorize("#3dafd2", "RMB") .. ": Options."
+			.. "\n" .. minetest.colorize("#3dafd2", "RMB") .. ": Configure waypoints."
 	,
 	short_description = "Teleporter",
 	inventory_image = "wb_tool_teleporter.png",
