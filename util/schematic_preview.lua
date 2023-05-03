@@ -18,7 +18,7 @@ TODO: large schematics are loosing nodes when rotated,
 	Would it be viable to use image waypoints in place of objects as a form of display?
 
 ]]
-local max_node_objects = 1000 --TODO: setting for this
+local max_node_objects = tonumber(minetest.settings:get("wb_max_node_objects")) or 1000
 local rotations = dofile(modpath .. "/util/object_rotations.lua")
 
 local schem_prev = {}

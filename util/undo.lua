@@ -5,7 +5,7 @@ local modprefix = modname .. ":"
 WARNING: UNDO might not work properly if the affected area isn't completely loaded
 ]]
 
-local undo_limit = 50
+local undo_limit = tonumber(minetest.settings:get("wb_undo_limit")) or 50
 
 
 local players = {}

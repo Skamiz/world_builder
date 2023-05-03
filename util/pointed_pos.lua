@@ -61,7 +61,7 @@ end
 
 -- just debug stuff
 --------------------------------------------------------------------------------
-
+if not world_builder.debug_toos then return end
 do
 	-- WARNING: if texture is made any more opaque it will become completely invissible
 	-- local tex = "wb_selector.png"

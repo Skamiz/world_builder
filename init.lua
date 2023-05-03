@@ -3,6 +3,7 @@ local modpath = minetest.get_modpath(modname)
 local modprefix = modname .. ":"
 
 world_builder = {}
+world_builder.debug_toos = minetest.settings:get_bool("wb_debug_tools", false)
 
 -- misc
 -- dofile(modpath .. "/functions.lua")
@@ -27,10 +28,6 @@ dofile(modpath .. "/tools/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
 
--- TODO: mod settings
--- 		number of undos per person
---		whether debug tools should be registered
--- 		"max" number of ghost nodes per schem-preview
 -- TODO: when loading a schematic, check that all the required nodes are registered
 -- 		if not display warning instead / formspec listing all missing nodes
 -- 		eventually maybe also a formspec letting the player select replacements

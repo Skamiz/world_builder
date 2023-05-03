@@ -58,6 +58,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 end)
 
+
+-- just debug stuff
+--------------------------------------------------------------------------------
+if not world_builder.debug_toos then return end
+
 local function show_test_fs(player)
 	local fs = {
 	"formspec_version[6]",
