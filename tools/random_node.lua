@@ -1,5 +1,6 @@
 --[[
 Goal:
+	TODO: item description
 	TODO: param2 override
 	TODO: on use imediatelly remove pointed node?
 		this works, though it does result in flickering when the node isn't present for a little bit

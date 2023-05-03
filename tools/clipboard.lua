@@ -389,6 +389,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		p_data.options.rot = 0
 		p_data.formspec.name = "un-named"
 		if p_data.ghost then p_data.ghost:delete() end
+		p_data.ghost = nil
 		p_data.schem = {}
 	end
 
