@@ -181,7 +181,7 @@ local function show_clipboard_fs(player)
 		"container_end[]",
 		"container[0.75,5]",
 		-- "set_focus[schem_name;true]",
-		"field[0,0;2,0.75;schem_name;file name;" .. players[player].formspec.name .. "]",
+		"field[0,0;2,0.75;schem_name;file name;" .. minetest.formspec_escape(players[player].formspec.name) .. "]",
 		"button[2.25,0;1.5,0.75;save;Save]",
 		"tooltip[save;Save schematic to file]",
 		"button[0.25,5.25;1.5,0.75;load;Load]",

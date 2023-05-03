@@ -80,8 +80,7 @@ local function get_waypoint_fs(player)
 	for i, waypoint in ipairs(waypoints) do
 		local x = math.floor((i-1)/10) * 4
 		local y = ((i-1) % 10) + 1.75
-		-- fs[#fs + 1] = "label[" .. x .. "," .. y + 1 .. ";" .. minetest.pos_to_string(vector.round(waypoint.pos)) .. "]"
-		fs[#fs + 1] = "button[" .. x .. "," .. y .. ";3,0.75;goto_" .. i .. ";" .. waypoint.name .. "]"
+		fs[#fs + 1] = "button[" .. x .. "," .. y .. ";3,0.75;goto_" .. i .. ";" .. minetest.formspec_escape(waypoint.name) .. "]"
 		fs[#fs + 1] = "tooltip[goto_" .. i .. ";" .. minetest.pos_to_string(vector.round(waypoint.pos)) .. "]"
 		fs[#fs + 1] = "button[" .. x + 3.0 .. "," .. y .. ";0.75,0.75;remove_" .. i .. ";X]"
 		fs[#fs + 1] = "tooltip[remove_" .. i .. ";Remove waypoint]"

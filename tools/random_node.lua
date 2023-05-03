@@ -51,7 +51,7 @@ local function get_random_node_fs(player)
 	local itemstack = player:get_wielded_item()
 	local meta = itemstack:get_meta()
 	local fs = {
-		"field[0,0;3,0.75;stack_name;;" .. itemstack:get_description() .. "]",
+		"field[0,0;3,0.75;stack_name;;" .. minetest.formspec_escape(itemstack:get_description()) .. "]",
 		"field_close_on_enter[search_text;false]",
 		"button[3,0;0.75,0.75;save;R]",
 		"tooltip[save;Rename Item]",

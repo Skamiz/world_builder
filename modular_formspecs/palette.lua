@@ -56,7 +56,7 @@ function palette.get_creative_form(player)
 
 	local fs = {
 		"list[detached:palette_" .. name .. ";main;0,1;10,4;" .. math.max((context.current_page * 40) - 40, 0) .. "]",
-		"field[0,0;3,0.75;search_text;;" .. context.search_text .. "]",
+		"field[0,0;3,0.75;search_text;;" .. minetest.formspec_escape(context.search_text) .. "]",
 		"field_close_on_enter[search_text;false]",
 		"button[3,0;0.75,0.75;palette_search;S]",
 		"tooltip[palette_search;Search]",
