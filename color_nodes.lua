@@ -29,5 +29,6 @@ for name, color in pairs(colors) do
 		description = capitalize(name),
 		tiles = {"wb_color_node.png"},
 		color = color,
+		groups = {oddly_breakable_by_hand = 3},
 	})
 end

@@ -27,6 +27,10 @@ dofile(modpath .. "/tools/random_node.lua")
 dofile(modpath .. "/tools/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
+-- TODO: popup system to temporarily display text inf oto the player without cluttering their chat
+-- 		things like: "You first need to select an area", etc...
+-- 		popup time is proportianal to message length + some time for the eyes to focus on the text
+-- 		if a new popup comes in while a previous is up, imediately replace it
 
 -- TODO: when loading a schematic, check that all the required nodes are registered
 -- 		if not display warning instead / formspec listing all missing nodes
