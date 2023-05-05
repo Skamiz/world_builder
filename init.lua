@@ -7,13 +7,14 @@ world_builder.debug_toos = minetest.settings:get_bool("wb_debug_tools", false)
 
 -- misc
 -- dofile(modpath .. "/functions.lua")
+dofile(modpath .. "/util/popups.lua")
+dofile(modpath .. "/util/hotbar_length.lua")
 dofile(modpath .. "/util/hotbar_select.lua")
 dofile(modpath .. "/util/pointed_pos.lua")
 dofile(modpath .. "/util/schematics.lua")
 dofile(modpath .. "/util/schematic_preview.lua")
 dofile(modpath .. "/color_nodes.lua")
 dofile(modpath .. "/util/undo.lua")
-dofile(modpath .. "/util/hotbar_length.lua")
 
 -- formspec stuff
 dofile(modpath .. "/modular_formspecs/palette.lua")
@@ -28,10 +29,7 @@ dofile(modpath .. "/tools/random_node.lua")
 dofile(modpath .. "/tools/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
--- TODO: popup system to temporarily display text inf oto the player without cluttering their chat
--- 		things like: "You first need to select an area", etc...
--- 		popup time is proportianal to message length + some time for the eyes to focus on the text
--- 		if a new popup comes in while a previous is up, imediately replace it
+
 
 -- TODO: when loading a schematic, check that all the required nodes are registered
 -- 		if not display warning instead / formspec listing all missing nodes

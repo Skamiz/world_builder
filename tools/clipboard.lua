@@ -57,7 +57,7 @@ end
 local function copy_area_to_clipboard(player)
 	local pos1, pos2 = world_builder.get_area(player)
 	if not (pos1 and pos2) then
-		minetest.chat_send_player(player:get_player_name(), "You first must select an area to copy.")
+		world_builder.hud_display(player, "You first must select an area to copy.")
 		return
 	end
 	local p_data = players[player]
@@ -82,6 +82,10 @@ end
 local function cut_area_to_clipboard(player)
 	copy_area_to_clipboard(player)
 	local pos1, pos2 = world_builder.get_area(player)
+	if not (pos1 and pos2) then
+		world_builder.hud_display(player, "You first must select an area to cut.")
+		return
+	end
 	local node = {name = "air"}
 
 	local minp, maxp = vector.sort(pos1, pos2)
@@ -107,7 +111,7 @@ local function place_from_clipboard(player, pos)
 	local schem = p_data.schem
 	local options = p_data.options
 	if not schem.data then
-		minetest.chat_send_player(player:get_player_name(), "Nothing to place. The clipboard is empty.")
+		world_builder.hud_display(player, "Nothing to place. The clipboard is empty.")
 		return
 	end
 
@@ -416,11 +420,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	-- schematic saving/loading
 	if fields.save then
 		if not p_data.schem.data then
-			minetest.chat_send_player(player:get_player_name(), "Can't save an empty clipboard.")
+			world_builder.hud_display(player, "Can't save an empty clipboard.")
 			return true
 		end
 		if fields.schem_name == "" then
-			minetest.chat_send_player(player:get_player_name(), "Cant save schematic under an empty name.")
+			world_builder.hud_display(player, "Cant save schematic under an empty name.")
 			return true
 		end
 		local path = schem_path .. "/" .. fields.schem_name
@@ -435,7 +439,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.load then
 		local file = p_data.formspec.list[p_data.formspec.selected]
 		if not file then
-			minetest.chat_send_player(player:get_player_name(), "No file selected.")
+			world_builder.hud_display(player, "No file selected.")
 			return true
 		end
 		load_from_file(player, file)
@@ -443,7 +447,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.delete then
 		local file = p_data.formspec.list[p_data.formspec.selected]
 		if not file then
-			minetest.chat_send_player(player:get_player_name(), "No file selected.")
+			world_builder.hud_display(player, "No file selected.")
 			return true
 		end
 		os.remove(schem_path .. "/" .. file)

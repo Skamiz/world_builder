@@ -175,7 +175,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.add_waypoint or fields.key_enter_field == "waypoint_name" then
 		local waypoint_name = fields.waypoint_name
 		if not type(waypoint_name) == "string" or waypoint_name == "" then
-			minetest.chat_send_player(player:get_player_name(), "Couldn't add waypoint. Invalid waypoint name.")
+			world_builder.hud_display(player, "Couldn't add waypoint. Invalid waypoint name.")
 			return true
 		end
 		add_waypoint(player, waypoint_name)

@@ -3,7 +3,7 @@ local modprefix = modname .. ":"
 
 --[[
 WARNING: UNDO might not work properly if the affected area isn't completely loaded
-TODO: some way to purge undo history for long running servers 
+TODO: some way to purge undo history for long running servers
 ]]
 
 local undo_limit = tonumber(minetest.settings:get("wb_undo_limit")) or 50
@@ -41,7 +41,10 @@ end
 
 local function undo(player, index)
 	local undo_data = players[player]
-	if #undo_data == 0 then return end
+	if #undo_data == 0 then
+		world_builder.hud_display(player, "Nothing to undo.")
+		return
+	end
 	index = index or #undo_data
 	local undo_def = undo_data[index]
 	-- print(dump(undo_data))
