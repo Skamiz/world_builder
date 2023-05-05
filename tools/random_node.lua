@@ -1,18 +1,10 @@
 --[[
 Goal:
-	TODO: item description
 	TODO: param2 override
-	TODO: on use imediatelly remove pointed node?
-		this works, though it does result in flickering when the node isn't present for a little bit
 	TODO: placement mode which works by distance like area selector
 	automatic procentage display
-	TODO:aux1 + punch to toggle replace mode? - nope punching can be only punching
-	use sneak + aux1 + RMB instead
 
-	checkbox for replacing instead of painting
-		make it possible to change this through a key + use kombo, so the forspec doesn't have to be opened
-
-	maybe it would be viable to have replacement mode as a general player setting rather then item bound
+	Might be nice to have replacement mode as a geenral player setting rather than being item bound.
 --]]
 local function print_table(t)
 	for k, v in pairs(t) do
@@ -53,7 +45,7 @@ local function get_random_node_fs(player)
 	local itemstack = player:get_wielded_item()
 	local meta = itemstack:get_meta()
 	local fs = {
-		"field[0,0;3,0.75;stack_name;;" .. minetest.formspec_escape(itemstack:get_description()) .. "]",
+		"field[0,0;3,0.75;stack_name;;" .. (minetest.formspec_escape(meta:get("description")) or itemstack:get_short_description()) .. "]",
 		"field_close_on_enter[search_text;false]",
 		"button[3,0;0.75,0.75;save;R]",
 		"tooltip[save;Rename Item]",
@@ -85,44 +77,54 @@ end
 
 palette.register_callbacks(mod_prefix .."random_node", show_random_node_formspec)
 
-minetest.register_node(mod_prefix .."random_node", {
-	description = "Random Node",
-	tiles = {"wb_random_node.png"},
-	overlay_tiles = {{name = "wb_random_node_overlay.png", color = "#fff"}},
-	node_placement_prediction = "",
-	stack_max = 1,
-	groups = {not_in_palette = 1},
-	on_place = function(itemstack, placer, pointed_thing)
-		if placer:get_player_control().aux1 then
-			local meta = itemstack:get_meta()
-			local inv = minetest.create_detached_inventory("random_node")
-			inv:set_lists(minetest.deserialize(meta:get("inv")) or {})
-			inv:set_size("main", 10)
-
-			show_random_node_formspec(placer)
+local function random_node_rmb(itemstack, player, pointed_thing)
+	local controls = player:get_player_control()
+	if controls.aux1 and not controls.sneak then
+		local meta = itemstack:get_meta()
+		if meta:get("replace") == "true" then
+			meta:set_string("replace", "false")
+			world_builder.hud_display(player, "Replacement mode: off")
 		else
-			local meta = itemstack:get_meta()
-			local list = minetest.deserialize(meta:get("stretched"))
-			if not list or #list == 0 then return end
-			local node = list[math.random(#list)]
-			local def = minetest.registered_nodes[node]
-			if meta:get("replace") == "true" then
-				-- minetest.set_node(pointed_thing.under, {name = node})
-				minetest.remove_node(pointed_thing.under)
-				def.on_place(ItemStack(node), placer, pointed_thing)
-			else
-				def.on_place(ItemStack(node), placer, pointed_thing)
-			end
+			meta:set_string("replace", "true")
+			world_builder.hud_display(player, "Replacement mode: on")
 		end
-	end,
-	on_secondary_use = function(itemstack, user, pointed_thing)
+		return itemstack
+	elseif pointed_thing.type == "node" and not (controls.aux1 and controls.sneak) then
+		local meta = itemstack:get_meta()
+		local list = minetest.deserialize(meta:get("stretched"))
+		if not list or #list == 0 then return end
+		local node = list[math.random(#list)]
+		local def = minetest.registered_nodes[node]
+		if meta:get("replace") == "true" then
+			-- minetest.set_node(pointed_thing.under, {name = node})
+			minetest.remove_node(pointed_thing.under)
+			def.on_place(ItemStack(node), player, pointed_thing)
+		else
+			def.on_place(ItemStack(node), player, pointed_thing)
+		end
+	else--if controls.aux1 and controls.sneak then
 		local meta = itemstack:get_meta()
 		local inv = minetest.create_detached_inventory("random_node")
 		inv:set_lists(minetest.deserialize(meta:get("inv")) or {})
 		inv:set_size("main", 10)
 
-		show_random_node_formspec(user)
-	end,
+		show_random_node_formspec(player)
+	end
+end
+
+minetest.register_node(mod_prefix .."random_node", {
+	short_description = "Random Node",
+	description = "Random Node"
+			.. "\n" .. minetest.colorize("#67a943", "Aux1") .. " + " .. minetest.colorize("#3dafd2", "RMB") .. ": Toggle replacement mode."
+			.. "\n" .. minetest.colorize("#67a943", "Aux1") .. " + " .. minetest.colorize("#ff7070", "Sneak") .. " + " .. minetest.colorize("#3dafd2", "RMB") .. ": Configuration."
+	,
+	tiles = {"wb_random_node.png"},
+	overlay_tiles = {{name = "wb_random_node_overlay.png", color = "#fff"}},
+	node_placement_prediction = "",
+	stack_max = 1,
+	groups = {not_in_palette = 1},
+	on_place = random_node_rmb,
+	on_secondary_use = random_node_rmb,
 })
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
@@ -138,7 +140,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.replace_mode then
 		meta:set_string("replace", fields.replace_mode)
 	end
-	if fields.stack_name then
+	if fields.stack_name and (fields.save or fields.key_enter_field == "stack_name") then
 		meta:set_string("description", fields.stack_name)
 	end
 	-- meta:set_string("description", "minetest.serialize(inventory_to_table(inv))")
