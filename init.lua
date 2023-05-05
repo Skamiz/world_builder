@@ -13,6 +13,7 @@ dofile(modpath .. "/util/schematics.lua")
 dofile(modpath .. "/util/schematic_preview.lua")
 dofile(modpath .. "/color_nodes.lua")
 dofile(modpath .. "/util/undo.lua")
+dofile(modpath .. "/util/hotbar_length.lua")
 
 -- formspec stuff
 dofile(modpath .. "/modular_formspecs/palette.lua")
@@ -56,9 +57,6 @@ dofile(modpath .. "/tools/clipboard.lua")
 
 -- TODO: read keybind settings to provide acurate tooltips in singleplayer
 -- 		in multiplayer fall back on 'aux1', 'sneak', etc...
-
--- TODO: chatcomand for setting players hotbar length as a backup if they have no other option for it
-
 
 
 
