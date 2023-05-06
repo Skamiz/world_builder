@@ -2,7 +2,8 @@
 Goal:
 	TODO: param2 override
 	TODO: placement mode which works by distance like area selector
-	automatic procentage display
+	automatic percentage display
+	TODO:There is some console warning when the node is used before being configured?
 
 	Might be nice to have replacement mode as a geenral player setting rather than being item bound.
 --]]
@@ -14,7 +15,7 @@ end
 
 
 
--- because serialize can't hadnel ItemStack userdata
+-- because serialize can't handle ItemStack userdata
 local function inventory_to_table(invref)
 	local inventory = {}
 	for name, list in pairs(invref:get_lists()) do

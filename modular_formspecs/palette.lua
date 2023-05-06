@@ -1,6 +1,6 @@
 local modname = minetest.get_current_modname()
 
--- is it possible ot make it so that scrolling in the page number showing area scrolls through the pages?
+-- is it possible to make it so that scrolling in the page number showing area scrolls through the pages?
 -- make a pallete item, which then can be used in place of other nodes as desired
 
 -- pallete object which can display itself as a formspec element, on click opens menu which allows editing the pallete
@@ -19,7 +19,7 @@ minetest.register_on_mods_loaded(function()
 			master_palette[#master_palette + 1] = name .. " " .. def.stack_max
 		end
 	end
-	master_palette[#master_palette + 1] = "air 99"
+	master_palette[#master_palette + 1] = "air " .. minetest.registered_nodes["air"].stack_max
 	table.sort(master_palette)
 end)
 

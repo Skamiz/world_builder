@@ -9,7 +9,9 @@ TODO: some way to purge undo history for long running servers
 local undo_limit = tonumber(minetest.settings:get("wb_undo_limit")) or 50
 
 
-local players = {}
+local players = {
+	["global"] = {}, -- for undo actions which aren't attributed to a player
+}
 
 minetest.register_on_joinplayer(function(player, last_login)
 	players[player] = {}
@@ -20,6 +22,7 @@ end)
 
 
 function world_builder.execute_with_undo(player, pos1, pos2, func, ...)
+	player = player or "global"
 	local undo_data = players[player]
 
 	local schemA = world_builder.schematics.make_schematic(pos1, pos2, 255)

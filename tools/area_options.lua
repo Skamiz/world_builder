@@ -13,8 +13,6 @@ TODO: it might be worth it to eventually split mirroring into into it's own thin
 	nodebox node mirroring
 	when the mirroring tables are generated add them to the nodes def
 
-	Move all of "You first need to select an area" code to the begining of formspec recieve
-
 	button to fix light in area
 
 	The individual placement functions shouldn't be player reliant and they should be globaly acessible
@@ -88,14 +86,8 @@ minetest.register_craftitem(modprefix .."area_options", {
 	end,
 })
 
-local function mirror_area(player, axis, direction)
-	local p1, p2 = world_builder.get_area(player)
-	if not (p1 and p2) then
-		minetest.chat_send_player(player:get_player_name(), "You first need to select an area.")
-		return
-	end
-
-	local minp, maxp = vector.sort(p1, p2)
+local function mirror_area(pos1, pos2, axis, direction, player)
+	local minp, maxp = vector.sort(pos1, pos2)
 	local schem = world_builder.schematics.make_schematic(minp, maxp, 255)
 
 	schem = world_builder.schematics.mirror(schem, axis)
@@ -110,14 +102,8 @@ local function mirror_area(player, axis, direction)
 	end)
 end
 
-local function fill_volume(player, node)
-	local p1, p2 = world_builder.get_area(player)
-	if not (p1 and p2) then
-		minetest.chat_send_player(player:get_player_name(), "You first need to select an area.")
-		return
-	end
-
-	local minp, maxp = vector.sort(p1, p2)
+local function fill_volume(pos1, pos2, node, player)
+	local minp, maxp = vector.sort(pos1, pos2)
 	local va = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
 	local all_pos = {}
 	for i in va:iterp(minp, maxp) do
@@ -139,14 +125,8 @@ local function num_matching(pos, minp, maxp)
 	end
 	return matching
 end
-local function fill_surface(player, node)
-	local p1, p2 = world_builder.get_area(player)
-	if not (p1 and p2) then
-		minetest.chat_send_player(player:get_player_name(), "You first need to select an area.")
-		return
-	end
-
-	local minp, maxp = vector.sort(p1, p2)
+local function fill_surface(pos1, pos2, node, player)
+	local minp, maxp = vector.sort(pos1, pos2)
 	local va = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
 	local all_pos = {}
 	for i in va:iterp(minp, maxp) do
@@ -163,14 +143,8 @@ local function fill_surface(player, node)
 		return "Fill Surface"
 	end)
 end
-local function fill_frame(player, node)
-	local p1, p2 = world_builder.get_area(player)
-	if not (p1 and p2) then
-		minetest.chat_send_player(player:get_player_name(), "You first need to select an area.")
-		return
-	end
-
-	local minp, maxp = vector.sort(p1, p2)
+local function fill_frame(pos1, pos2, node, player)
+	local minp, maxp = vector.sort(pos1, pos2)
 	local va = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
 	local all_pos = {}
 	for i in va:iterp(minp, maxp) do
@@ -186,32 +160,21 @@ local function fill_frame(player, node)
 	end)
 end
 
-local function draw_line(player, node)
-	local p1, p2 = world_builder.get_area(player)
-	if not (p1 and p2) then
-		minetest.chat_send_player(player:get_player_name(), "You first need to select an area.")
-		return
-	end
-
-	local direction = p2 - p1
+local function draw_line(pos1, pos2, node, player)
+	local direction = pos2 - pos1
 
 	local length = math.max(math.abs(direction.x), math.abs(direction.y), math.abs(direction.z))
 	direction = direction / length
 
-	world_builder.execute_with_undo(player, p1, p2, function()
+	world_builder.execute_with_undo(player, pos1, pos2, function()
 		for n = 0, length do
-			local pos = p1 + (direction * n)
+			local pos = pos1 + (direction * n)
 			minetest.set_node(pos:round(), node)
 		end
 		return "Draw Line"
 	end)
 end
-local function build_wall(player, node, axis)
-	local pos1, pos2 = world_builder.get_area(player)
-	if not (pos1 and pos2) then
-		minetest.chat_send_player(player:get_player_name(), "You first need to select an area.")
-		return
-	end
+local function build_wall(pos1, pos2, node, axis, player)
 	axis = axis or "y"
 	local direction = pos2 - pos1
 	local length = math.max(math.abs(direction.x), math.abs(direction.y), math.abs(direction.z))
@@ -235,61 +198,44 @@ end
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= modprefix .."area_options" then return end
 
-	for k, v in pairs(fields) do
-		if k:match("[xyz][+-]") then
-			local axis, direction = k:match("([xyz])([+-])")
-			mirror_area(player, axis, direction)
-			return true
-		end
-	end
-	if fields.clear_area then
-		fill_volume(player, {name = "air"})
-		return true
-	end
-	if fields.fill_volume then
-		local node_name = get_first_node(player)
-		if node_name then
-			fill_volume(player, {name = node_name})
-		else
-			minetest.chat_send_player(player:get_player_name(), "You need at least one node in your inventory.")
-		end
-		return true
-	end
-	if fields.fill_surface then
-		local node_name = get_first_node(player)
-		if node_name then
-			fill_surface(player, {name = node_name})
-		else
-			minetest.chat_send_player(player:get_player_name(), "You need at least one node in your inventory.")
-		end
-		return true
-	end
-	if fields.fill_frame then
-		local node_name = get_first_node(player)
-		if node_name then
-			fill_frame(player, {name = node_name})
-		else
-			minetest.chat_send_player(player:get_player_name(), "You need at least one node in your inventory.")
-		end
-		return true
-	end
-	if fields.draw_line then
-		local node_name = get_first_node(player)
-		if node_name then
-			draw_line(player, {name = node_name})
-		else
-			minetest.chat_send_player(player:get_player_name(), "You need at least one node in your inventory.")
-		end
-		return true
-	end
-	if fields.build_wall then
-		local node_name = get_first_node(player)
-		if node_name then
-			build_wall(player, {name = node_name})
-		else
-			minetest.chat_send_player(player:get_player_name(), "You need at least one node in your inventory.")
-		end
+	local pos1, pos2 = world_builder.get_area(player)
+	if not (pos1 and pos2) then
+		world_builder.hud_display(player, "You first need to select an area.")
 		return true
 	end
 
+	-- mirroring
+	for k, v in pairs(fields) do
+		if k:match("[xyz][+-]") then
+			local axis, direction = k:match("([xyz])([+-])")
+			mirror_area(pos1, pos2, axis, direction, player)
+		end
+	end
+
+	if fields.clear_area then
+		fill_volume(pos1, pos2, {name = "air"}, player)
+	end
+
+	local node_name = get_first_node(player)
+	if not node_name then
+		world_builder.hud_display(player, "You first need to select an area.")
+		return true
+	end
+
+	if fields.fill_volume then
+		fill_volume(pos1, pos2, {name = node_name}, player)
+	end
+	if fields.fill_surface then
+		fill_surface(pos1, pos2, {name = node_name}, player)
+	end
+	if fields.fill_frame then
+		fill_frame(pos1, pos2, {name = node_name}, player)
+	end
+	if fields.draw_line then
+		draw_line(pos1, pos2, {name = node_name}, player)
+	end
+	if fields.build_wall then
+		build_wall(pos1, pos2, {name = node_name}, "y", player)
+	end
+	return true
 end)

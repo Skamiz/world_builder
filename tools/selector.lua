@@ -37,6 +37,9 @@ local function get_hud_string(player)
 		minetest.pos_to_string(pos_2),
 		"\nSize: ",
 		minetest.pos_to_string(size),
+		"\nVolume: ",
+		-- (size.x + 1) * (size.y + 1) * (size.z + 1),
+		size.x * size.y * size.z,
 	}
 	s = table.concat(s)
 	return s
@@ -49,7 +52,7 @@ local function add_hud(player)
 		alignment = {x = 1, y = -1},
 		name = "selection area info",
 		text = get_hud_string(player),
-		-- number = 0xe3893b,
+		number = 0xeffffff,
 		z_index = 53,
 		direction = 2,
 	})

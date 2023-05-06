@@ -17,6 +17,8 @@ TODO: large schematics are loosing nodes when rotated,
 	functions which convert to/from a schematic structure which only contains non-air nodes
 	Would it be viable to use image waypoints in place of objects as a form of display?
 
+TODO: move node objects to their own file and expand for other drawtypes
+
 ]]
 local max_node_objects = tonumber(minetest.settings:get("wb_max_node_objects")) or 1000
 local rotations = dofile(modpath .. "/util/object_rotations.lua")
