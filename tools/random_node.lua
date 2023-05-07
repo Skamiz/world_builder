@@ -4,6 +4,7 @@ Goal:
 	TODO: placement mode which works by distance like area selector
 	automatic percentage display
 	TODO:There is some console warning when the node is used before being configured?
+	TODO: don't close formspec when enter is pressend in text field
 
 	Might be nice to have replacement mode as a geenral player setting rather than being item bound.
 --]]

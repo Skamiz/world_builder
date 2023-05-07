@@ -30,7 +30,7 @@ dofile(modpath .. "/tools/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
 
-
+-- TODO: trimm function, shrinks area so that all outer layers contain somethig else than only air
 -- TODO: when loading a schematic, check that all the required nodes are registered
 -- 		if not display warning instead / formspec listing all missing nodes
 -- 		eventually maybe also a formspec letting the player select replacements

@@ -68,6 +68,9 @@ local function show_fs(player)
 		"tooltip[draw_line;Draws a line from pos_1 to pos_2.]",
 		"button[0,6;1.5,0.75;build_wall;Wall]",
 		"tooltip[draw_line;Builds a wall between pos_1 to pos_2.]",
+
+		"button[0,7;1.75,0.75;count_nodes;Count Nodes]",
+		"tooltip[count_nodes;Show node counts in selected area.]",
 	}
 
 	fs = table.concat(fs)
@@ -77,14 +80,74 @@ end
 
 
 minetest.register_craftitem(modprefix .."area_options", {
-	short_description = "Area Option",
-	description = "Area Option (WIP)",
+	short_description = "Area Options (WIP)",
+	description = "Area Options (WIP)"
+			.. "\n" .. minetest.colorize("#e3893b", "LMB") .. ": Options."
+	,
 	inventory_image = "wb_area_options.png",
 	stack_max = 1,
 	on_use = function(itemstack, user, pointed_thing)
 		show_fs(user)
 	end,
 })
+
+local function get_node_counts(pos1, pos2)
+	local minp, maxp = vector.sort(pos1, pos2)
+	local va = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
+	local nodes = {}
+
+	for i in va:iterp(minp, maxp) do
+		local node = minetest.get_node(va:position(i))
+		if not nodes[node.name] then
+			nodes[node.name] = 0
+		end
+		nodes[node.name] = nodes[node.name] + 1
+	end
+	nodes["air"] = nil
+
+	local sorted_nodes = {}
+	for name, count in pairs(nodes) do
+		table.insert(sorted_nodes, {name = name, count = count})
+	end
+	table.sort(sorted_nodes, function(a, b)
+		return a.count > b.count
+	end)
+	return sorted_nodes
+end
+local function show_node_count_formspec(player)
+	local pos1, pos2 = world_builder.get_area(player)
+	local sorted_nodes = get_node_counts(pos1, pos2)
+
+	if #sorted_nodes == 0 then
+		world_builder.hud_display(player, "Selected area is empty.")
+		return
+	end
+
+	local fs = {
+		"formspec_version[6]",
+		"size[10.25,10.75,false]",
+		"container[0.5,0.5]",
+	}
+	for i, node in ipairs(sorted_nodes) do
+		local def = minetest.registered_nodes[node.name]
+		local description = def and def.description or node.name
+
+		-- local x = (math.floor((i - 1) / 8) * 2) * 1.25
+		-- local y = ((i - 1) % 8) * 1.25
+		local x = ((i - 1) % 4) * 2 * 1.25
+		local y = math.floor((i - 1) / 4) * 1.25
+
+
+		fs[#fs + 1] = "item_image[" .. x .. "," .. y .. ";1,1;" .. node.name .. "]"
+		fs[#fs + 1] = "tooltip[" .. x .. "," .. y .. ";1,1;" .. description .. "]"
+		fs[#fs + 1] = "label[" .. x + 1 .. "," .. y + 0.5 .. ";" .. " x " .. node.count .. "]"
+	end
+	fs[#fs + 1] = "container_end[]"
+
+	fs = table.concat(fs)
+	minetest.show_formspec(player:get_player_name(), modprefix .."area_options", fs)
+end
+
 
 local function mirror_area(pos1, pos2, axis, direction, player)
 	local minp, maxp = vector.sort(pos1, pos2)
@@ -214,6 +277,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.clear_area then
 		fill_volume(pos1, pos2, {name = "air"}, player)
+	end
+	if fields.count_nodes then
+		show_node_count_formspec(player)
 	end
 
 	local node_name = get_first_node(player)
