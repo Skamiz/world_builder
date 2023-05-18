@@ -17,8 +17,16 @@ TODO: large schematics are loosing nodes when rotated,
 	functions which convert to/from a schematic structure which only contains non-air nodes
 	Would it be viable to use image waypoints in place of objects as a form of display?
 
+TODO: there need to be more guards in place in case the preview object casess to exist
+		which with large schems can happen at any time
+		related:
+TODO: put a max limit on how far the preview can be moved from the player
+
 TODO: move node objects to their own file and expand for other drawtypes
 
+TODO: there is still a chance that when a previe is fixed in space, hidden and then unhiden it will appear at the player possition instead
+
+TODO maybe: make it so that the root node of the preview is in the middle, rather then the min corner
 ]]
 local max_node_objects = tonumber(minetest.settings:get("wb_max_node_objects")) or 1000
 local rotations = dofile(modpath .. "/util/object_rotations.lua")

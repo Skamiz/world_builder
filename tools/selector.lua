@@ -7,6 +7,7 @@ TODO: make the yellow selection box segmented so it's easier to tell at a glance
 		one way would be to use a checked texture and cut out only as many pixels as needed
 			but this will lead to missaligned tillin at the edges where planes meet
 			though it shouldn't be impossible to get it aligned with some trickery
+TODO: also make it use a mesh whichs sides are visible fom both directions
 ]]
 
 local players = {}
@@ -87,6 +88,25 @@ do
 	})
 end
 
+-- image, image width, image height, tiled width, tiled height
+function get_selection_texture(nx, ny)
+	local image = "wb_selection.png"
+	local iw = 16
+	local ih = 16
+	local tba = {"[combine:", nx, "x", ny}
+	for x = 0, math.ceil(nx / (iw )) - 1 do
+		for y = 0, math.ceil(ny / (iw )) - 1 do
+			tba[#tba + 1] = ":"
+			tba[#tba + 1] = x * iw
+			tba[#tba + 1] = ","
+			tba[#tba + 1] = y * ih
+			tba[#tba + 1] = "="
+			tba[#tba + 1] = image
+		end
+	end
+	return table.concat(tba)
+end
+
 -- creates and moves object denoting selected area
 local one_node_vector = vector.new(1.001, 1.001, 1.001)
 local function update_selection(player, pos_1, pos_2)
@@ -120,7 +140,13 @@ local function update_selection(player, pos_1, pos_2)
 	local minp, maxp = vector.sort(pos_1, pos_2)
 
 	local dif = maxp - minp
-	p_data.selection:set_properties({visual_size = (dif + one_node_vector)})
+	local xz = get_selection_texture(dif.x + 1, dif.z + 1)
+	local zy = get_selection_texture(dif.z + 1, dif.y + 1)
+	local xy = get_selection_texture(dif.x + 1, dif.y + 1)
+	p_data.selection:set_properties({
+		visual_size = (dif + one_node_vector),
+		textures = {xz, xz, zy, zy, xy, xy},
+	})
 	local mid = dif / 2
 	p_data.selection:set_pos(minp + mid)
 end

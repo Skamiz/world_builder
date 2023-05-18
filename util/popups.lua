@@ -36,6 +36,7 @@ local function set_hud_text(player, text)
 	end
 end
 
+-- TODO: add an arg for text color
 function world_builder.hud_display(player, text)
 	local p_data = players[player]
 	if p_data.job then

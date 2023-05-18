@@ -4,6 +4,7 @@ local modprefix = modname .. ":"
 --[[
 WARNING: UNDO might not work properly if the affected area isn't completely loaded
 TODO: some way to purge undo history for long running servers
+TODO: place schematics in voxel manip to prevent them being placed only partially
 ]]
 
 local undo_limit = tonumber(minetest.settings:get("wb_undo_limit")) or 50

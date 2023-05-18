@@ -30,6 +30,7 @@ dofile(modpath .. "/tools/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
 
+-- TODO: add stop_time functionality
 -- TODO: trimm function, shrinks area so that all outer layers contain somethig else than only air
 -- TODO: when loading a schematic, check that all the required nodes are registered
 -- 		if not display warning instead / formspec listing all missing nodes
@@ -56,6 +57,7 @@ dofile(modpath .. "/tools/clipboard.lua")
 -- TODO: read keybind settings to provide acurate tooltips in singleplayer
 -- 		in multiplayer fall back on 'aux1', 'sneak', etc...
 
+-- for brush, raise/lower terrain while keeping the node composition same
 
 
 local function print_table(t)
