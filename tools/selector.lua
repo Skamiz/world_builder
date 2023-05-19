@@ -78,6 +78,8 @@ do
 	minetest.register_entity(modprefix .."selector", {
 		pointable = false,
 		visual = "cube",
+		-- visual = "mesh",
+		-- mesh = "cube.obj",
 		visual_size = {x = scale, y = scale, z = scale},
 		textures = {tex, tex, tex, tex, tex, tex},
 		use_texture_alpha = true,
@@ -88,14 +90,13 @@ do
 	})
 end
 
--- image, image width, image height, tiled width, tiled height
 function get_selection_texture(nx, ny)
 	local image = "wb_selection.png"
 	local iw = 16
 	local ih = 16
 	local tba = {"[combine:", nx, "x", ny}
 	for x = 0, math.ceil(nx / (iw )) - 1 do
-		for y = 0, math.ceil(ny / (iw )) - 1 do
+		for y = 0, math.ceil(ny / (ih )) - 1 do
 			tba[#tba + 1] = ":"
 			tba[#tba + 1] = x * iw
 			tba[#tba + 1] = ","
@@ -134,7 +135,12 @@ local function update_selection(player, pos_1, pos_2)
 	if not p_data.selection or p_data.selection:get_pos() == nil then
 		p_data.selection = minetest.add_entity(player:get_pos(), modprefix .."selector")
 		local t = "wb_pixel.png^[colorize:#c8c837^[opacity:129"
-		p_data.selection:set_properties({textures = {t, t, t, t, t, t}})
+		p_data.selection:set_properties({
+			-- textures = {t, t, t, t, t, t},
+			visual = "mesh",
+			mesh = "cube.obj",
+			-- backface_culling = false,
+		})
 	end
 
 	local minp, maxp = vector.sort(pos_1, pos_2)
@@ -144,8 +150,9 @@ local function update_selection(player, pos_1, pos_2)
 	local zy = get_selection_texture(dif.z + 1, dif.y + 1)
 	local xy = get_selection_texture(dif.x + 1, dif.y + 1)
 	p_data.selection:set_properties({
-		visual_size = (dif + one_node_vector),
-		textures = {xz, xz, zy, zy, xy, xy},
+		visual_size = ((dif + one_node_vector) * 5),
+		-- textures = {xz, xz, zy, zy, xy, xy},
+		textures = {xz, zy, xy},
 	})
 	local mid = dif / 2
 	p_data.selection:set_pos(minp + mid)
