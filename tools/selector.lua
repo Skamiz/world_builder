@@ -136,9 +136,8 @@ local function update_selection(player, pos_1, pos_2)
 		p_data.selection = minetest.add_entity(player:get_pos(), modprefix .."selector")
 		local t = "wb_pixel.png^[colorize:#c8c837^[opacity:129"
 		p_data.selection:set_properties({
-			-- textures = {t, t, t, t, t, t},
-			visual = "mesh",
-			mesh = "cube.obj",
+			textures = {t, t, t, t, t, t},
+			visual = "cube",
 			-- backface_culling = false,
 		})
 	end
@@ -150,9 +149,8 @@ local function update_selection(player, pos_1, pos_2)
 	local zy = get_selection_texture(dif.z + 1, dif.y + 1)
 	local xy = get_selection_texture(dif.x + 1, dif.y + 1)
 	p_data.selection:set_properties({
-		visual_size = ((dif + one_node_vector) * 5),
-		-- textures = {xz, xz, zy, zy, xy, xy},
-		textures = {xz, zy, xy},
+		visual_size = (dif + one_node_vector),
+		textures = {xz, xz, zy, zy, xy, xy},
 	})
 	local mid = dif / 2
 	p_data.selection:set_pos(minp + mid)
