@@ -131,8 +131,8 @@ end
 palette.register_callbacks(modprefix .."formspec_replacer", show_replacer_fs)
 
 minetest.register_craftitem(modprefix .."tool_replacer", {
-	short_description = "Replacer (WIP)",
-	description = "Replacer (WIP)"
+	short_description = "Replacer",
+	description = "Replacer"
 			.. "\n" .. minetest.colorize("#e3893b", "LMB") .. ": Swap nodes."
 			.. "\n" .. minetest.colorize("#3dafd2", "RMB") .. ": Configuration."
 	,
