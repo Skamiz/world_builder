@@ -25,6 +25,7 @@ dofile(modpath .. "/tools/teleporter.lua")
 dofile(modpath .. "/tools/selector.lua")
 dofile(modpath .. "/tools/area_options.lua")
 dofile(modpath .. "/tools/random_node.lua")
+dofile(modpath .. "/tools/replacer.lua")
 -- dofile(modpath .. "/builders_tool.lua")
 dofile(modpath .. "/tools/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
@@ -40,7 +41,6 @@ dofile(modpath .. "/tools/clipboard.lua")
 --  paintbrush for color not terrain
 -- TODO: scripter, writing and library of scripts to run on each node in selection
 -- in addition to smooth also have versions biased to take away/add
--- TODO: replacement sets, to make it possible: stone->cobble, sotne stair-> cobble stair, etc...
 -- TODO: line tool, places a straight line of nodes prom one pos to another
 -- 		or just stright take inspiration from dires building tool
 -- 		like placing an orthogonal line from the pointed node to the players pos

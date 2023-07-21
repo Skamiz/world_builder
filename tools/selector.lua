@@ -2,12 +2,7 @@ local modname = minetest.get_current_modname()
 local modprefix = modname .. ":"
 
 --[[
-TODO: make the yellow selection box segmented so it's easier to tell at a glance how many nodes it's big
-		see 'edit' mod
-		one way would be to use a checked texture and cut out only as many pixels as needed
-			but this will lead to missaligned tillin at the edges where planes meet
-			though it shouldn't be impossible to get it aligned with some trickery
-TODO: also make it use a mesh whichs sides are visible fom both directions
+
 ]]
 
 local players = {}
@@ -90,7 +85,7 @@ do
 	})
 end
 
-function get_selection_texture(nx, ny)
+local function get_selection_texture(nx, ny)
 	local image = "wb_selection.png"
 	local iw = 16
 	local ih = 16

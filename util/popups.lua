@@ -55,6 +55,7 @@ minetest.register_on_joinplayer(function(player, last_login)
 end)
 
 minetest.register_on_leaveplayer(function(player, timed_out)
+	local p_data = players[player]
 	if p_data.job then
 		p_data.job:cancel()
 	end
