@@ -2,11 +2,23 @@ local modname = minetest.get_current_modname()
 local modpath = minetest.get_modpath(modname)
 local modprefix = modname .. ":"
 
+local worldpath = minetest.get_worldpath()
+local data_path = minetest.get_mod_data_path()
+
 world_builder = {}
 world_builder.modname = modname
 world_builder.modpath = modpath
 world_builder.modprefix = modprefix
-world_builder.data_path = minetest.get_mod_data_path() -- for storing schems
+
+world_builder.worldpath = minetest.get_worldpath()
+world_builder.data_path = minetest.get_mod_data_path()
+
+if minetest.settings:get("wb_schem_dir") == "world" then
+	world_builder.schem_path = world_builder.worldpath .. "/schematics"
+else
+	world_builder.schem_path = world_builder.data_path .. "/schematics"
+end
+
 world_builder.debug_toos = minetest.settings:get_bool("wb_debug_tools", false)
 
 -- misc

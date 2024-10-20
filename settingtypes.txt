@@ -1,16 +1,17 @@
-# Undo Limit
-#
 # How many undo operations are saved im memory per player.
 wb_undo_limit (Undo Limit) int 50 1 1000
 
-# Max Preview Nodes
-#
+
 # This is a rough limit on the number of objects used to show schematic placement previews.
 # This limit is per player.
 wb_max_node_objects (Max Preview Nodes) int 1000 1 10000
 
-# Debug Tools
-#
+
 # Whether debug tools for the mods development are registered.
 # Unless you are me you don't need to wory about this.
 wb_debug_tools (Debug Tools) bool false
+
+# Location schematic files are stored to and read from
+# mod_data - files are stored in the global mod_data directory and are available in every game and every world
+# world - files are stored in the current worlds schematic directory and only available in this one world
+wb_schem_dir (Schematic Storage Location) enum mod_data mod_data,world

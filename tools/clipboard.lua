@@ -10,10 +10,8 @@ local players = {}
 -- TODO: multiplier for placement distance based on schem size should be a player option not a tool option
 -- TODO: when in fixed_pos mode add buttons to the formspec for moving pos along axes for finetunig of large schems
 
--- TODO: turn this into a setting, for some purposes it's better to have schems included in the world file
--- local schem_path = minetest.get_worldpath() .. "/schematics"
 -- TODO: consider making the path game specific so as to limit schems to world in which they could potentially work
-local schem_path = world_builder.data_path .. "/schematics"
+local schem_path = world_builder.schem_path
 minetest.mkdir(schem_path)
 
 

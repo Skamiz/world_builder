@@ -13,7 +13,7 @@ local schematics = {}
 world_builder.schematics = schematics
 
 
-schematics.schem_path = world_builder.data_path .. "/schematics"
+schematics.schem_path = world_builder.schem_path
 minetest.mkdir(schematics.schem_path)
 
 
