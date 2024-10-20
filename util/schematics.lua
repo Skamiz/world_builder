@@ -7,9 +7,15 @@ It seems Minetest has no direct way to just create a schematic,
 the only thing it can do is write a schematic to file and then read it in.
 --]]
 
+
 local vector_1 = vector.new(1, 1, 1)
 local schematics = {}
 world_builder.schematics = schematics
+
+
+schematics.schem_path = world_builder.data_path .. "/schematics"
+minetest.mkdir(schematics.schem_path)
+
 
 schematics.make_schematic = function(pos1, pos2, air_prob)
 	-- by default don't include "air"
@@ -157,4 +163,44 @@ schematics.diff = function(schemA, schemB)
 	}
 
 	return schemAB, schemBA
+end
+
+
+function schematics.save(name, schematic)
+	local path = schematics.schem_path .. "/" .. name
+	-- local schem_l = minetest.serialize_schematic(schematic, "lua", {})
+	-- minetest.safe_file_write(path .. ".lua", schem_l)
+	local schem_m = minetest.serialize_schematic(schematic, "mts", {})
+	minetest.safe_file_write(path .. ".mts", schem_m)
+end
+
+-- return alphabetically ordered list of undefined node names in schematic
+function schematics.find_undefined_nodes(schematic)
+	local undefined = {}
+	for i, node in ipairs(schematic.data) do
+		if not minetest.registered_nodes[node.name] then
+			undefined[node.name] = true
+		end
+	end
+
+	local nodes = {}
+	for node_name, _ in pairs(undefined) do
+		table.insert(nodes, node_name)
+	end
+	table.sort(nodes)
+
+	if #nodes > 0 then
+		return nodes
+	else
+		return nil
+	end
+end
+
+function schematics.apply_replacements(schematic, replacements)
+	for i, node in ipairs(schematic.data) do
+		if replacements[node.name] then
+			node.name = replacements[node.name]
+		end
+	end
+	return schematic
 end

@@ -20,7 +20,7 @@ local function remove_hud(player)
 end
 local function add_hud(player)
 	players[player].hud_id = player:hud_add({
-		hud_elem_type = "text",
+		type = "text",
 		position = {x = 0.5, y = 0.9},
 		alignment = {x = 0, y = 0},
 		name = "popup_hud",

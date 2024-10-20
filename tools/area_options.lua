@@ -17,6 +17,7 @@ TODO: it might be worth it to eventually split mirroring into into it's own thin
 
 	The individual placement functions shouldn't be player reliant and they should be globaly acessible
 
+TODO: split area opperations to their own file
 ]]
 
 -- get first node from the players inventory
@@ -36,6 +37,7 @@ local function show_fs(player)
 	local fs = {
 		"formspec_version[6]",
 		"size[10,10,false]",
+		"padding[0,0]",
 		"container[0,0]",
 		"label[1.125,0.5;Mirror:]",
 		"button[0.125,1;0.75,0.75;x+;+X]",
@@ -67,10 +69,12 @@ local function show_fs(player)
 		"button[0,5;1.5,0.75;draw_line;Line]",
 		"tooltip[draw_line;Draws a line from pos_1 to pos_2.]",
 		"button[0,6;1.5,0.75;build_wall;Wall]",
-		"tooltip[draw_line;Builds a wall between pos_1 to pos_2.]",
+		"tooltip[build_wall;Builds a wall between pos_1 to pos_2.]",
 
 		"button[0,7;1.75,0.75;count_nodes;Count Nodes]",
 		"tooltip[count_nodes;Show node counts in selected area.]",
+		"button[0,8;1.75,0.75;fix_undefined;Fix Undefined]",
+		"tooltip[fix_undefined;replace undefined nodes in selected area.]",
 	}
 
 	fs = table.concat(fs)
@@ -257,6 +261,16 @@ local function build_wall(pos1, pos2, node, axis, player)
 end
 
 
+local function fix_undefined(pos1, pos2, player)
+
+	local undefined_nodes = world_builder.get_undefined_nodes_in_area(pos1, pos2)
+	local callback = function(replacements)
+		world_builder.replace(pos1, pos2, replacements, player)
+	end
+	world_builder.show_replace_undefined_fs(player, undefined_nodes, callback)
+end
+
+
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= modprefix .."area_options" then return end
@@ -302,6 +316,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 	if fields.build_wall then
 		build_wall(pos1, pos2, {name = node_name}, "y", player)
+	end
+	if fields.fix_undefined then
+		fix_undefined(pos1, pos2, player)
 	end
 	return true
 end)

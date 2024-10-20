@@ -3,6 +3,10 @@ local modpath = minetest.get_modpath(modname)
 local modprefix = modname .. ":"
 
 world_builder = {}
+world_builder.modname = modname
+world_builder.modpath = modpath
+world_builder.modprefix = modprefix
+world_builder.data_path = minetest.get_mod_data_path() -- for storing schems
 world_builder.debug_toos = minetest.settings:get_bool("wb_debug_tools", false)
 
 -- misc
@@ -14,6 +18,7 @@ dofile(modpath .. "/util/pointed_pos.lua")
 dofile(modpath .. "/util/schematics.lua")
 dofile(modpath .. "/util/schematic_preview.lua")
 dofile(modpath .. "/color_nodes.lua")
+dofile(modpath .. "/fix_undefined.lua")
 dofile(modpath .. "/util/undo.lua")
 
 -- formspec stuff
@@ -31,6 +36,9 @@ dofile(modpath .. "/tools/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
 
+-- TODO: path building tool
+-- 		specify width and node distribution(probably in probabilities)
+-- 		one mouse button starts/stops building process, the other, once the proces has started specifies individual points and immediatelly connects them
 -- TODO: add stop_time functionality
 -- TODO: trimm function, shrinks area so that all outer layers contain somethig else than only air
 -- TODO: when loading a schematic, check that all the required nodes are registered

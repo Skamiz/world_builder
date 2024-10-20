@@ -41,6 +41,7 @@ local function replace(pos1, pos2, replacements, player)
 		return "Replace Nodes"
 	end)
 end
+world_builder.replace = replace
 
 local function save_replacer_inv_to_meta(player, itemstack)
 	if not itemstack then itemstack = player:get_wielded_item() end

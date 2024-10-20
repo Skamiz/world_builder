@@ -1,6 +1,6 @@
 local modname = minetest.get_current_modname()
 
--- is it possible to make it so that scrolling in the page number showing area scrolls through the pages?
+-- is it possible to make it so that scrolling in the page number showing area scrolls through the pages? YES! see manequin mod
 -- make a pallete item, which then can be used in place of other nodes as desired
 
 -- pallete object which can display itself as a formspec element, on click opens menu which allows editing the pallete
@@ -13,15 +13,18 @@ local players = {}
 
 local master_palette = {}
 palette.master_palette = master_palette
-minetest.register_on_mods_loaded(function()
+
+local function init_palette()
 	for name, def in pairs(minetest.registered_nodes) do
-		if not (def.groups and (def.groups.not_in_creative_inventory or def.groups.not_in_palette)) then
+		local groups = def.groups
+		if not (groups and (groups.not_in_creative_inventory or groups.not_in_palette)) then
 			master_palette[#master_palette + 1] = name .. " " .. def.stack_max
 		end
 	end
 	master_palette[#master_palette + 1] = "air " .. minetest.registered_nodes["air"].stack_max
 	table.sort(master_palette)
-end)
+end
+minetest.register_on_mods_loaded(init_palette)
 
 
 local function get_filtered_list(search_text)

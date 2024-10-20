@@ -13,7 +13,7 @@ has 3 modes:
 function world_builder.get_eye_pos(player)
 	local eye_pos = player:get_pos()
 	local eye_height = player:get_properties().eye_height
-	local eye_offset = player:get_eye_offset()
+	local eye_offset = player:get_eye_offset() / 10
 
 	eye_pos.y = eye_pos.y + eye_height
 	eye_pos = eye_pos + eye_offset
@@ -97,7 +97,7 @@ local function show_pointer(player)
 end
 
 local function remove_pointer(player)
-	players[player]:remove()
+	if players[player] then players[player]:remove() end
 	players[player] = nil
 end
 

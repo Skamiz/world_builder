@@ -43,7 +43,7 @@ end
 
 local function add_hud(player)
 	players[player].hud_id = player:hud_add({
-		hud_elem_type = "text",
+		type = "text",
 		position = {x = 0, y = 1},
 		alignment = {x = 1, y = -1},
 		name = "selection area info",
@@ -67,21 +67,23 @@ end
 
 -- object managment togethere with functionality section
 do
-	-- WARNING: if texture is made any more transparent it will become completely invissible
+	-- WARNING: if texture is made any more transparent it will become completely invisible
 	local tex = "wb_pixel.png^[opacity:129"
 	local scale = 1.002
 	minetest.register_entity(modprefix .."selector", {
-		pointable = false,
-		visual = "cube",
-		-- visual = "mesh",
-		-- mesh = "cube.obj",
-		visual_size = {x = scale, y = scale, z = scale},
-		textures = {tex, tex, tex, tex, tex, tex},
-		use_texture_alpha = true,
-		-- is_visible = true,
-		-- backface_culling = false,
-		glow = -1,
-		static_save = false,
+		initial_properties = {
+			pointable = false,
+			visual = "cube",
+			-- visual = "mesh",
+			-- mesh = "cube.obj",
+			visual_size = {x = scale, y = scale, z = scale},
+			textures = {tex, tex, tex, tex, tex, tex},
+			use_texture_alpha = true,
+			-- is_visible = true,
+			-- backface_culling = false,
+			glow = -1,
+			static_save = false,
+		},
 	})
 end
 
@@ -250,10 +252,10 @@ end)
 
 minetest.register_on_leaveplayer(function(player, timed_out)
 	local p_data = players[player]
-	if p_data.selector.obj:get_pos() then p_data.selector.obj:remove() end
-	if p_data.pos_1.obj:get_pos() then p_data.pos_1.obj:remove() end
-	if p_data.pos_2.obj:get_pos() then p_data.pos_2.obj:remove() end
-	if p_data.selection:get_pos() then p_data.selection:remove() end
+	if p_data.selector.obj and p_data.selector.obj:is_valid() then p_data.selector.obj:remove() end
+	if p_data.pos_1.obj and p_data.pos_1.obj:is_valid() then p_data.pos_1.obj:remove() end
+	if p_data.pos_2.obj and p_data.pos_2.obj:is_valid() then p_data.pos_2.obj:remove() end
+	if p_data.selection and p_data.selection:is_valid() then p_data.selection:remove() end
 	players[player] = nil
 
 end)

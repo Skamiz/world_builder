@@ -10,7 +10,10 @@ local players = {}
 -- TODO: multiplier for placement distance based on schem size should be a player option not a tool option
 -- TODO: when in fixed_pos mode add buttons to the formspec for moving pos along axes for finetunig of large schems
 
-local schem_path = minetest.get_worldpath() .. "/schematics"
+-- TODO: turn this into a setting, for some purposes it's better to have schems included in the world file
+-- local schem_path = minetest.get_worldpath() .. "/schematics"
+-- TODO: consider making the path game specific so as to limit schems to world in which they could potentially work
+local schem_path = world_builder.data_path .. "/schematics"
 minetest.mkdir(schem_path)
 
 
@@ -169,6 +172,8 @@ local function show_clipboard_fs(player)
 		"tooltip[fixate;Fix/Unfix current preview position in space]",
 		"button[4,2;1.5,0.75;clear;Clear CB]",
 		"tooltip[clear;Clears current schematic from clipboard]",
+		"button[4,4;1.5,0.75;replace_undefined;Fix Undef]",
+		"tooltip[replace_undefined;Show formspec to replace undefined nodes in schematic preview]",
 		"container_end[]",
 		"set_focus[place_air;true]",
 		"container[0,2.5]",
@@ -392,6 +397,19 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		p_data.ghost = nil
 		p_data.schem = {}
 	end
+	if fields.replace_undefined then
+		if not p_data.schem.data then return true end
+		local undefined_nodes = world_builder.schematics.find_undefined_nodes(p_data.schem)
+		local callback = function(replacements)
+			if not replacements then return end
+			p_data.schem = world_builder.schematics.apply_replacements(p_data.schem, replacements)
+			if p_data.ghost then p_data.ghost:delete() end
+			p_data.ghost = world_builder.schem_prev.new(p_data.schem, player)
+			p_data.ghost:set_placement(nil, nil, p_data.options.flags)
+			p_data.formspec.name = "un-named"
+		end
+		world_builder.show_replace_undefined_fs(player, undefined_nodes, callback)
+	end
 
 
 	-- schematic flags
@@ -423,12 +441,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			world_builder.hud_display(player, "Cant save schematic under an empty name.")
 			return true
 		end
-		local path = schem_path .. "/" .. fields.schem_name
-
-		-- local schem_l = minetest.serialize_schematic(p_data.schem, "lua", {})
-		-- minetest.safe_file_write(path .. ".lua", schem_l)
-		local schem_m = minetest.serialize_schematic(p_data.schem, "mts", {})
-		minetest.safe_file_write(path .. ".mts", schem_m)
+		world_builder.schematics.save(fields.schem_name, p_data.schem)
 		show_clipboard_fs(player)
 	end
 
