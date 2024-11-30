@@ -53,6 +53,7 @@ local function undo(player, index)
 	local undo_def = undo_data[index]
 	-- print(dump(undo_data))
 	-- assert(vector.check(minp))
+	-- TODO: use 'minetest.load_area' to preload area to prevent schematic being cut off
 	minetest.place_schematic(undo_def.pos, undo_def.schematic, nil, nil, true, nil)
 	table.remove(undo_data, index)
 end
@@ -60,12 +61,12 @@ end
 local function get_undo_list(player)
 	local undo_data = players[player]
 	local fs = {
-		"textlist[0,0.5;5,6;undo_list;"
+		"textlist[0,0.5;12,6;undo_list;"
 	}
 	for i, undo_def in ipairs(undo_data) do
 		fs[#fs + 1] = i
 		fs[#fs + 1] = " - "
-		fs[#fs + 1] = undo_def.description
+		fs[#fs + 1] = minetest.formspec_escape(undo_def.description)
 		fs[#fs + 1] = ","
 	end
 	fs[#fs + 1] = "]"
@@ -75,7 +76,7 @@ end
 local function get_undo_fs(player)
 	local fs = {
 		"formspec_version[6]",
-		"size[6,8,false]",
+		"size[13,8,false]",
 		"container[0.5,0.5]",
 		"label[0,0;Undo History:]",
 		get_undo_list(player),

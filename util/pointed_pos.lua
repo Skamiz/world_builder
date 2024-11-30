@@ -21,6 +21,7 @@ function world_builder.get_eye_pos(player)
 	return eye_pos
 end
 
+-- returns precise coordinates
 function world_builder.get_looked_pos(player, distance)
 	distance = distance or 5
 	local eye_pos = world_builder.get_eye_pos(player)
@@ -30,7 +31,7 @@ function world_builder.get_looked_pos(player, distance)
 	return pos
 end
 
-
+-- returns rounded block positions
 function world_builder.pointed_pos(player, distance, mode)
 	if type(player) == "string" then
 		player = minetest.get_player_by_name(player)
@@ -46,7 +47,7 @@ function world_builder.pointed_pos(player, distance, mode)
 		local ray = minetest.raycast(eye_pos, target_pos, false, false)
 		local pt = ray:next()
 		-- if there simply isn't a node in the pointed direction
-		if not pt then return target_pos end
+		if not pt then return target_pos:round() end
 		if mode == "above" then
 			return pt.above
 		else
@@ -86,7 +87,7 @@ minetest.register_globalstep(function(dtime)
 	for player, pointer in pairs(players) do
 		local wielded = player:get_wielded_item()
 		local meta = wielded:get_meta()
-		local pos = world_builder.pointed_pos(player, tonumber(meta:get("distance")) or 5, meta:get("pointing_mode") or "under"):round()
+		local pos = world_builder.pointed_pos(player, tonumber(meta:get("distance")) or 5, meta:get("pointing_mode") or "under")
 		pointer:set_pos(pos)
 	end
 end)

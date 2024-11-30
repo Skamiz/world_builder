@@ -169,63 +169,7 @@ local function mirror_area(pos1, pos2, axis, direction, player)
 	end)
 end
 
-local function fill_volume(pos1, pos2, node, player)
-	local minp, maxp = vector.sort(pos1, pos2)
-	local va = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
-	local all_pos = {}
-	for i in va:iterp(minp, maxp) do
-		table.insert(all_pos, va:position(i))
-	end
-	world_builder.execute_with_undo(player, minp, maxp, function()
-		minetest.bulk_set_node(all_pos, node)
-		return "Fill Volume"
-	end)
-end
 
-local axes = {"x", "y", "z"}
-local function num_matching(pos, minp, maxp)
-	local matching = 0
-	for _, axis in pairs(axes) do
-		if pos[axis] == minp[axis] or pos[axis] == maxp[axis] then
-			matching = matching + 1
-		end
-	end
-	return matching
-end
-local function fill_surface(pos1, pos2, node, player)
-	local minp, maxp = vector.sort(pos1, pos2)
-	local va = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
-	local all_pos = {}
-	for i in va:iterp(minp, maxp) do
-		local pos = va:position(i)
-		if pos.x == minp.x or pos.x == maxp.x or
-			pos.y == minp.y or pos.y == maxp.y or
-			pos.z == minp.z or pos.z == maxp.z then
-			table.insert(all_pos, pos)
-		end
-	end
-
-	world_builder.execute_with_undo(player, minp, maxp, function()
-		minetest.bulk_set_node(all_pos, node)
-		return "Fill Surface"
-	end)
-end
-local function fill_frame(pos1, pos2, node, player)
-	local minp, maxp = vector.sort(pos1, pos2)
-	local va = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
-	local all_pos = {}
-	for i in va:iterp(minp, maxp) do
-		local pos = va:position(i)
-		if num_matching(pos, minp, maxp) >= 2 then
-			table.insert(all_pos, pos)
-		end
-	end
-
-	world_builder.execute_with_undo(player, minp, maxp, function()
-		minetest.bulk_set_node(all_pos, node)
-		return "Fill Frame"
-	end)
-end
 
 local function draw_line(pos1, pos2, node, player)
 	local direction = pos2 - pos1
@@ -290,7 +234,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	if fields.clear_area then
-		fill_volume(pos1, pos2, {name = "air"}, player)
+		world_builder.execute_with_undo(player, pos1, pos2, function()
+			return world_builder.area.fill_volume(pos1, pos2, {name = "air"})
+		end)
+		-- fill_volume(pos1, pos2, {name = "air"}, player)
 	end
 	if fields.count_nodes then
 		show_node_count_formspec(player)
@@ -303,13 +250,21 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	if fields.fill_volume then
-		fill_volume(pos1, pos2, {name = node_name}, player)
+		-- world_builder.execute_with_undo(player, pos1, pos2,
+		-- 		world_builder.area.fill_volume, pos1, pos2, {name = node_name})
+		world_builder.execute_with_undo(player, pos1, pos2, function()
+			return world_builder.area.fill_volume(pos1, pos2, {name = node_name})
+		end)
 	end
 	if fields.fill_surface then
-		fill_surface(pos1, pos2, {name = node_name}, player)
+		world_builder.execute_with_undo(player, pos1, pos2, function()
+			return world_builder.area.fill_surface(pos1, pos2, {name = node_name})
+		end)
 	end
 	if fields.fill_frame then
-		fill_frame(pos1, pos2, {name = node_name}, player)
+		world_builder.execute_with_undo(player, pos1, pos2, function()
+			return world_builder.area.fill_frame(pos1, pos2, {name = node_name})
+		end)
 	end
 	if fields.draw_line then
 		draw_line(pos1, pos2, {name = node_name}, player)

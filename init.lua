@@ -24,6 +24,8 @@ world_builder.debug_toos = minetest.settings:get_bool("wb_debug_tools", false)
 -- misc
 -- dofile(modpath .. "/functions.lua")
 dofile(modpath .. "/util/popups.lua")
+dofile(modpath .. "/util/wheel_menu.lua")
+dofile(modpath .. "/util/inputs.lua")
 dofile(modpath .. "/util/hotbar_length.lua")
 dofile(modpath .. "/util/hotbar_select.lua")
 dofile(modpath .. "/util/pointed_pos.lua")
@@ -32,6 +34,7 @@ dofile(modpath .. "/util/schematic_preview.lua")
 dofile(modpath .. "/color_nodes.lua")
 dofile(modpath .. "/fix_undefined.lua")
 dofile(modpath .. "/util/undo.lua")
+dofile(modpath .. "/util/area.lua")
 
 -- formspec stuff
 dofile(modpath .. "/modular_formspecs/palette.lua")
@@ -40,6 +43,7 @@ dofile(modpath .. "/modular_formspecs/color_picker.lua")
 -- tools
 dofile(modpath .. "/tools/teleporter.lua")
 dofile(modpath .. "/tools/selector.lua")
+dofile(modpath .. "/tools/shape_pencil.lua")
 dofile(modpath .. "/tools/area_options.lua")
 dofile(modpath .. "/tools/random_node.lua")
 dofile(modpath .. "/tools/replacer.lua")
@@ -47,7 +51,10 @@ dofile(modpath .. "/tools/replacer.lua")
 dofile(modpath .. "/tools/clipboard.lua")
 -- dofile(modpath .. "/terrain_brush.lua")
 
-
+-- TODO:
+-- pencil - one of the modes (fill, frame, hollow) will be erease
+-- brush
+-- terraformer
 -- TODO: path building tool
 -- 		specify width and node distribution(probably in probabilities)
 -- 		one mouse button starts/stops building process, the other, once the proces has started specifies individual points and immediatelly connects them
