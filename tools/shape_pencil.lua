@@ -114,7 +114,9 @@ end
 local function get_draw_node(itemstack)
 	local meta = itemstack:get_meta()
 
-	if not meta:contains("node_name") then return end
+	if not meta:contains("node_name") then
+		return {name = "air", param2 = 0}
+	end
 
 	local node_name = meta:get_string("node_name")
 	local node_param2 = meta:get_int("node_param2")
@@ -223,28 +225,6 @@ end)
 -- currently active drawing actions indexed by player
 local drawers = {}
 
-local function start_drawing(player, pencil)
-	local data = {
-		node = get_draw_node(pencil),
-		shape = get_draw_shape(pencil),
-		mode = get_draw_mode(pencil),
-
-		points = {},
-		point_objects = {},
-		preview_obj = nil,
-	}
-
-	drawers[player] = data
-end
-
-local function clear_draw(player)
-	local data = drawers[player]
-	if not data then return end
-	for _, point_obj in pairs(data.point_objects) do
-		point_obj:remove()
-	end
-	drawers[player] = nil
-end
 
 -- return minp and maxp of the bounding box of the given positioins
 local function get_extent(positions)
@@ -266,56 +246,6 @@ local function get_extent(positions)
 	return minp, maxp
 end
 
-local function finish_drawing(player)
-	local data = drawers[player]
-	local shape_def = pencil.shapes[data.shape]
-
-	local positions = shape_def.get_node_positions(unpack(data.points))
-	if data.mode == "hollow" then
-		-- TODO: filter out enclosed positions
-	end
-
-	local minp, maxp = get_extent(positions)
-	world_builder.execute_with_undo(player, minp, maxp, function()
-		if data.mode == "erase" then
-			data.node.name = "air"
-			for _, pos in ipairs(positions) do
-				core.remove_node(pos)
-			end
-		else
-			for _, pos in ipairs(positions) do
-				core.set_node(pos, data.node)
-			end
-		end
-		return shape_def.get_draw_description(data.node, unpack(data.points))
-	end)
-
-	clear_draw(player)
-end
-
-local function add_draw_point(player)
-	if not drawers[player] then
-		local pencil = player:get_wielded_item()
-		if not get_draw_node(pencil) then
-			world_builder.hud_display(player, "No node selected.")
-			return
-		end
-		start_drawing(player, pencil)
-	end
-
-	local data = drawers[player]
-	local shape_def = pencil.shapes[data.shape]
-	local draw_point = world_builder.pointed_pos(player, 4.5, "under")
-	local point_obj = core.add_entity(draw_point, "world_builder:draw_point")
-
-	table.insert(data.points, draw_point)
-	table.insert(data.point_objects, point_obj)
-
-	if #data.points >= shape_def.points_required then
-		finish_drawing(player)
-	end
-end
-
 
 local function new_drawing(node, shape, mode, player)
 	local drawing = {
@@ -323,7 +253,7 @@ local function new_drawing(node, shape, mode, player)
 		shape = shape,
 		mode = mode,
 
-		player = player, --the one who is drawing
+		drawer = player,
 
 		control_points = {},
 		point_objects = {},
@@ -334,17 +264,19 @@ local function new_drawing(node, shape, mode, player)
 				point_obj:remove()
 			end
 			-- self.preview_object:remove()
+
+			self.invalid = true
 		end,
-		add_control_point_from_player = function(self, player)
-			local pos = world_builder.pointed_pos(player, 4.5, "under")
+		add_control_point_from_drawer_view = function(self)
+			local pos = world_builder.pointed_pos(self.drawer, 4.5, "under")
 			self:add_control_point(pos)
 		end,
 		add_control_point = function(self, pos)
-			local point_obj = core.add_entity(draw_point, "world_builder:draw_point")
+			local point_obj = core.add_entity(pos, "world_builder:draw_point")
 
 			table.insert(self.control_points, pos)
 			table.insert(self.point_objects, point_obj)
-			if #self.points >= self.shape.points_required then
+			if #self.control_points >= self.shape.points_required then
 				self:finalize()
 			end
 		end,
@@ -355,7 +287,7 @@ local function new_drawing(node, shape, mode, player)
 			end
 
 			local minp, maxp = get_extent(positions)
-			world_builder.execute_with_undo(self.player, minp, maxp, function()
+			world_builder.execute_with_undo(self.drawer, minp, maxp, function()
 				if self.mode == "erase" then
 					for _, pos in ipairs(positions) do
 						core.remove_node(pos)
@@ -371,8 +303,7 @@ local function new_drawing(node, shape, mode, player)
 			self:remove()
 		end
 	}
-
-
+	return drawing
 end
 
 
@@ -381,7 +312,11 @@ end
 
 world_builder.register_on_change_wielded(function(player, new_item, old_item)
 	if old_item == world_builder.modprefix .."tool_shape_pencil" then
-		clear_draw(player)
+		if drawers[player] then
+			drawers[player]:remove()
+			drawers[player] = nil
+			-- clear_draw(player)
+		end
 	end
 end)
 
@@ -415,10 +350,14 @@ minetest.register_craftitem(world_builder.modprefix .."tool_shape_pencil", {
 	inventory_image = "wb_tool_shape_pencil.png",
 	stack_max = 1,
 	on_use = function(itemstack, user, pointed_thing)
-		add_draw_point(user)
-		-- local pos = world_builder.pointed_pos(user, 4, "under")
-		-- local point_obj = core.add_entity(pos, "world_builder:draw_point")
-		-- add draw point
+		if (not drawers[user]) or drawers[user].invalid then
+			local node = get_draw_node(itemstack)
+			local shape = get_draw_shape(itemstack)
+			local mode = get_draw_mode(itemstack)
+			drawers[user] = new_drawing(node, pencil.shapes[shape], mode, user)
+		end
+		drawers[user]:add_control_point_from_drawer_view()
+		-- add_draw_point(user)
 	end,
 	on_place = function(itemstack, placer, pointed_thing)
 		local node = minetest.get_node(pointed_thing.under)
