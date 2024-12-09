@@ -269,7 +269,7 @@ local function new_drawing(node, shape, mode, player)
 		end,
 		add_control_point_from_drawer_view = function(self)
 			local pos = world_builder.pointed_pos(self.drawer, 4.5, "under")
-			self:add_control_point(pos)
+			return self:add_control_point(pos)
 		end,
 		add_control_point = function(self, pos)
 			local point_obj = core.add_entity(pos, "world_builder:draw_point")
@@ -278,7 +278,9 @@ local function new_drawing(node, shape, mode, player)
 			table.insert(self.point_objects, point_obj)
 			if #self.control_points >= self.shape.points_required then
 				self:finalize()
+				return true
 			end
+			return false
 		end,
 		finalize = function(self)
 			local positions = self.shape.get_node_positions(unpack(self.control_points))
@@ -350,14 +352,16 @@ minetest.register_craftitem(world_builder.modprefix .."tool_shape_pencil", {
 	inventory_image = "wb_tool_shape_pencil.png",
 	stack_max = 1,
 	on_use = function(itemstack, user, pointed_thing)
-		if (not drawers[user]) or drawers[user].invalid then
+		if not drawers[user] then
 			local node = get_draw_node(itemstack)
 			local shape = get_draw_shape(itemstack)
 			local mode = get_draw_mode(itemstack)
 			drawers[user] = new_drawing(node, pencil.shapes[shape], mode, user)
 		end
-		drawers[user]:add_control_point_from_drawer_view()
-		-- add_draw_point(user)
+		local last_point = drawers[user]:add_control_point_from_drawer_view()
+		if last_point then
+			drawers[user] = nil
+		end
 	end,
 	on_place = function(itemstack, placer, pointed_thing)
 		local node = minetest.get_node(pointed_thing.under)
