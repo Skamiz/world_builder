@@ -1,12 +1,16 @@
 --[[
-player:get_player_control()
-
-callback_presdown(player, key)
-callback_release(player, key, time_since_pressdown)
+Simple callback mechanism for detection of key events.
 
 register_callback(callback, key*, "pressed" or "released"*)
-* both optional, if not present callback is called for any
-callback = function(player, key, event, time_since_pressed)
+'inputs.register_callback(callback, key, event)'
+- callback = function(player, key, event),
+- key = one of: "up", "down", "left", "right", "jump", "aux1", "sneak", "dig",
+	"place", "zoom"
+- event = "pressed" or "released"
+
+'key' and 'event' are optional, if not present the callback will be called
+for any key or event
+
 ]]
 
 inputs = {}
@@ -44,10 +48,9 @@ end)
 
 local function call_callbacks(player, key, event)
 	for _, callback_def in ipairs(inputs.registered_callbacks) do
-		if (not callback_def.key) or (callback_def.key == key) then
-			if (not callback_def.event) or (callback_def.event == event) then
-				callback_def.callback(player, key, event, players[player][key])
-			end
+		if ((not callback_def.key) or (callback_def.key == key)) and
+				((not callback_def.event) or (callback_def.event == event)) then
+			callback_def.callback(player, key, event)
 		end
 	end
 end
@@ -62,7 +65,7 @@ local function update_player_inputs(player)
 			call_callbacks(player, key, pressed and "pressed" or "released")
 
 			if pressed then
-				old_inputs[key] = minetest.get_us_time()
+				old_inputs[key] = true
 			else
 				old_inputs[key] = false
 			end
@@ -76,8 +79,10 @@ minetest.register_globalstep(function(dtime)
 	end
 end)
 
--- inputs.register_callback(function(player, key, event, time_since_pressed)
--- 	local player_name = player:get_player_name()
--- 	local temp = "%s %s the %s key"
--- 	print(temp:format(player_name, event, key))
--- end, nil, nil)
+--[[
+	inputs.register_callback(function(player, key, event)
+		local player_name = player:get_player_name()
+		local temp = "%s %s the %s key"
+		print(temp:format(player_name, event, key))
+	end, nil, nil)
+--]]
