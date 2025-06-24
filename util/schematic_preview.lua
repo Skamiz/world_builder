@@ -39,23 +39,27 @@ world_builder.schem_prev = schem_prev
 
 local invi = "wb_pixel.png^[opacity:0"
 minetest.register_entity(modprefix .."empty", {
-	pointable = false,
-	visual = "cube",
-	use_texture_alpha = true,
-	textures = {invi, invi, invi, invi, invi, invi},
-	-- is_visible = true,
-	static_save = false,
+	initial_properties = {
+		pointable = false,
+		visual = "cube",
+		use_texture_alpha = true,
+		textures = {invi, invi, invi, invi, invi, invi},
+		-- is_visible = true,
+		static_save = false,
+	},
 })
 minetest.register_entity(modprefix .."preview", {
-	pointable = false,
-	visual = "item",
-	wield_item = "air",
-	visual_size = {x = 2/3 + 0.001, y = 2/3 + 0.001, z = 2/3 + 0.001},
-	use_texture_alpha = true,
-	-- is_visible = true,
-	-- backface_culling = false,
-	glow = -1,
-	static_save = false,
+	initial_properties = {
+		pointable = false,
+		visual = "node",
+		node = {name = "air", param1=0, param2=0},
+		visual_size = {x = 1.001, y = 1.001, z = 1.001},
+		use_texture_alpha = true,
+		-- is_visible = true,
+		-- backface_culling = false,
+		glow = -1,
+		static_save = false,
+	},
 })
 local vector_1 = vector.new(1, 1, 1)
 
@@ -118,15 +122,16 @@ schem_prev.new = function(schematic, attach_player)
 		if node_name ~= "air" and math.random() < (max_node_objects/nnodes) then
 			local prev = minetest.add_entity(pos, modprefix .."preview")
 			prev:set_properties({
-				wield_item = node_name,
+				node = node,
 			})
 
-			local rot = nil
-			if node_def and node_def.paramtype2 == "facedir" then
-				rot = rotations.facedir[node.param2]
-			end
+			-- local rot = nil
+			-- if node_def and node_def.paramtype2 == "facedir" then
+			-- 	rot = rotations.facedir[node.param2]
+			-- end
 
-			prev:set_attach(root, nil, (va:position(i) - vector_1) * 10, rot)
+			prev:set_attach(root, nil, (va:position(i) - vector_1) * 10)
+			-- prev:set_attach(root, nil, (va:position(i) - vector_1) * 10, rot)
 		end
 	end
 
