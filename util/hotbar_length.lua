@@ -37,7 +37,7 @@ minetest.register_chatcommand("wb_hotbar", {
 	-- privs = {},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
-		hotbar_length = tonumber(param)
+		local hotbar_length = tonumber(param)
 		if not hotbar_length then
 			minetest.chat_send_player(name, "leght parameter must be a number")
 			return
